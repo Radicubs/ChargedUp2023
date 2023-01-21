@@ -21,18 +21,18 @@ public class PhotonVision extends SubsystemBase{
         camera = new PhotonCamera("photonvision");
     }
 
-    public boolean seeTarget(int targetID){
+    public Translation2d getTarget(int targetID){
         PhotonPipelineResult result = camera.getLatestResult();
         if(!result.hasTargets())
-            return false;
+            return null;
         
         for(PhotonTrackedTarget target : result.getTargets()){
             if(target.getFiducialId() == targetID) {
-                Translation2d translation = PhotonUtils.estimateCameraToTargetTranslation(PhotonUtils.calculateDistanceToTargetMeters(0.165, 66.5, 0, Units.degreesToRadians(result.getBestTarget().getPitch())), Rotation2d.fromDegrees(-target.getYaw()));
-                return true;
+                Translation2d translation = PhotonUtils.estimateCameraToTargetTranslation(PhotonUtils.calculateDistanceToTargetMeters(0.1625, 66.5, 0, Units.degreesToRadians(result.getBestTarget().getPitch())), Rotation2d.fromDegrees(-target.getYaw()));
+                return translation;
             }
         }
-        return false;
+        return null;
     }
 
     
