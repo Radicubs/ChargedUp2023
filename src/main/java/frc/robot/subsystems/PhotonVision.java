@@ -5,6 +5,9 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+
+import java.lang.annotation.Target;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -24,15 +27,15 @@ public class PhotonVision extends SubsystemBase{
         setDefaultCommand(new AprilTagAlign(this, 1));
     }
 
-    public Translation2d getTarget(int targetID){
+    public PhotonTrackedTarget getTarget(int targetID){
         PhotonPipelineResult result = camera.getLatestResult();
         if(!result.hasTargets())
             return null;
         
         for(PhotonTrackedTarget target : result.getTargets()){
             if(target.getFiducialId() == targetID) {
-                Translation2d translation = PhotonUtils.estimateCameraToTargetTranslation(PhotonUtils.calculateDistanceToTargetMeters(Constants.PhotonVision.cameraHeightMeters, Constants.PhotonVision.targetHeightMeters, Constants.PhotonVision.cameraPitchRadians, Units.degreesToRadians(target.getPitch())), Rotation2d.fromDegrees(-target.getYaw()));
-                return translation;
+                //Translation2d translation = PhotonUtils.estimateCameraToTargetTranslation(PhotonUtils.calculateDistanceToTargetMeters(Constants.PhotonVision.cameraHeightMeters, Constants.PhotonVision.targetHeightMeters, Constants.PhotonVision.cameraPitchRadians, Units.degreesToRadians(target.getPitch())), Rotation2d.fromDegrees(-target.getYaw()));
+                return target;
             }
         }
         return null;
