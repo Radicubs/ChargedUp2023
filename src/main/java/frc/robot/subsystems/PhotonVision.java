@@ -1,6 +1,12 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -21,8 +27,10 @@ public class PhotonVision extends SubsystemBase{
             return false;
         
         for(PhotonTrackedTarget target : result.getTargets()){
-            if(target.getFiducialId() == targetID)
+            if(target.getFiducialId() == targetID) {
+                Translation2d translation = PhotonUtils.estimateCameraToTargetTranslation(PhotonUtils.calculateDistanceToTargetMeters(0.165, 66.5, 0, Units.degreesToRadians(result.getBestTarget().getPitch())), Rotation2d.fromDegrees(-target.getYaw()));
                 return true;
+            }
         }
         return false;
     }
