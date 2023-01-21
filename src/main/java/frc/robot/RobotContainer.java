@@ -1,5 +1,7 @@
 package frc.robot;
 
+import org.opencv.photo.Photo;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -31,6 +33,7 @@ public class RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
+    private final PhotonVision camera = new PhotonVision();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */

@@ -11,14 +11,17 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.commands.AprilTagAlign;
 
 public class PhotonVision extends SubsystemBase{
     //the string is the name of the NetworkTable that PhotonVision is broadcasting info over
     //it is the same as the camera's nickname from PhotonVision UI
-    PhotonCamera camera;
+    private final PhotonCamera camera;
 
     public PhotonVision(){
         camera = new PhotonCamera("photonvision");
+        setDefaultCommand(new AprilTagAlign(this, 1));
     }
 
     public Translation2d getTarget(int targetID){
@@ -28,7 +31,7 @@ public class PhotonVision extends SubsystemBase{
         
         for(PhotonTrackedTarget target : result.getTargets()){
             if(target.getFiducialId() == targetID) {
-                Translation2d translation = PhotonUtils.estimateCameraToTargetTranslation(PhotonUtils.calculateDistanceToTargetMeters(0.1625, 66.5, 0, Units.degreesToRadians(result.getBestTarget().getPitch())), Rotation2d.fromDegrees(-target.getYaw()));
+                Translation2d translation = PhotonUtils.estimateCameraToTargetTranslation(PhotonUtils.calculateDistanceToTargetMeters(Constants.PhotonVision.cameraHeightMeters, Constants.PhotonVision.targetHeightMeters, Constants.PhotonVision.cameraPitchRadians, Units.degreesToRadians(target.getPitch())), Rotation2d.fromDegrees(-target.getYaw()));
                 return translation;
             }
         }

@@ -10,23 +10,29 @@ import frc.robot.subsystems.Swerve;
 public class AprilTagAlign extends CommandBase {
 
     private final int tagnum;
-    private final Swerve base;
+    //private final Swerve base;
     private final PhotonVision camera;
 
-    public AprilTagAlign(Swerve base, PhotonVision camera, int tagnum) {
+    public AprilTagAlign(PhotonVision camera, int tagnum) {
         this.tagnum = tagnum;
-        this.base = base;
+        //this.base = base;
         this.camera = camera;
+        addRequirements(camera);
     }
 
     @Override
     public void initialize() {
-        base.driveFromChassisSpeeds(new ChassisSpeeds());
+        //base.driveFromChassisSpeeds(new ChassisSpeeds());
     }
 
     @Override
     public void execute() {
-        Translation2d relativePos = camera.getTarget(1);
+        Translation2d relativePos = camera.getTarget(tagnum);
+        if(relativePos == null) {
+            System.out.println("heloooo");
+
+            return;
+        }
         SmartDashboard.putNumber("x distance", relativePos.getX());
         SmartDashboard.putNumber("Y distance", relativePos.getY());
     }
