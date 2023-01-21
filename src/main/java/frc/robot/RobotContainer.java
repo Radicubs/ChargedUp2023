@@ -40,10 +40,7 @@ public class RobotContainer {
                 s_Swerve, 
                 () -> -driver.getRawAxis(translationAxis), 
                 () -> -driver.getRawAxis(strafeAxis), 
-                () -> -driver.getRawAxis(rotationAxis), 
-                () -> robotCentric.getAsBoolean()
-            )
-        );
+                () -> -driver.getRawAxis(rotationAxis)));
 
         // Configure the button bindings
         configureButtonBindings();
@@ -58,6 +55,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+        robotCentric.toggleOnTrue(new InstantCommand(s_Swerve::toggleFieldOriented));
     }
 
     /**
