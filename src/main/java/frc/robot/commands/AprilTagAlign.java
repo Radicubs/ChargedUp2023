@@ -12,19 +12,20 @@ import frc.robot.subsystems.Swerve;
 public class AprilTagAlign extends CommandBase {
 
     private final int tagnum;
-    //private final Swerve base;
+    private final Swerve base;
     private final PhotonVision camera;
 
-    public AprilTagAlign(PhotonVision camera, int tagnum) {
+    public AprilTagAlign(PhotonVision camera, Swerve base, int tagnum) {
         this.tagnum = tagnum;
-        //this.base = base;
+        this.base = base;
         this.camera = camera;
         addRequirements(camera);
+        addRequirements(base);
     }
 
     @Override
     public void initialize() {
-        //base.driveFromChassisSpeeds(new ChassisSpeeds());
+        base.driveFromChassisSpeeds(new ChassisSpeeds());
     }
 
     @Override
@@ -34,9 +35,38 @@ public class AprilTagAlign extends CommandBase {
             return;
         }
         
+        double rot;
+        ChassisSpeeds speeds = new ChassisSpeeds();
+        //STEPS
+        //Rotate Chassis until rot Z is within a bound close to 180
+        //Move left/right until posY is within a bound close to 0
+        //Move forward/back until posX is within a set bound
+        //      Experiment until it ends up a certain distance from the tag
+        //      The units are supposed to be in meters, but the calibration isn't great
+
+        /*do{
+            speeds.vxMetersPerSecond = 0.0;
+            speeds.vyMetersPerSecond = 0.0;
+            speeds.omegaRadiansPerSecond = 0.0;
+
+            //edit chassis speeds
+            
+            base.driveFromChassisSpeeds(new ChassisSpeeds());
+        }
+        while(//until a bound is satisfied);*/
+
         Transform3d pose = target.getBestCameraToTarget();
-        SmartDashboard.putNumber("x distance", pose.getX());
-        SmartDashboard.putNumber("Y distance", pose.getY());
-        SmartDashboard.putNumber("Yaw Rotation", target.getYaw());
+        double posX = pose.getX();
+        double posY = pose.getY();
+        double rotZ = pose.getRotation().getZ();
+
+        SmartDashboard.putNumber("Z Rotation", rotZ);
+        SmartDashboard.putNumber("X Pos", posX);
+        SmartDashboard.putNumber("Y Pos", posY);
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        base.driveFromChassisSpeeds(new ChassisSpeeds());
     }
 }

@@ -24,7 +24,6 @@ public class PhotonVision extends SubsystemBase{
 
     public PhotonVision(){
         camera = new PhotonCamera("photonvision");
-        setDefaultCommand(new AprilTagAlign(this, 1));
     }
 
     public PhotonTrackedTarget getTarget(int targetID){

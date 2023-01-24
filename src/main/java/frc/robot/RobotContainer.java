@@ -70,6 +70,8 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return new PathWeave(s_Swerve);
+
+        return new AprilTagAlign(camera, s_Swerve, 1);
+        //return new PathWeave(s_Swerve);
     }
 }
