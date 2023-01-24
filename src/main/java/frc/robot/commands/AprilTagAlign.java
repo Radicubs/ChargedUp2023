@@ -16,6 +16,12 @@ public class AprilTagAlign extends CommandBase {
     private final Swerve base;
     private final PhotonVision camera;
 
+    private boolean inXRange = false;
+    private boolean inYRange = false;
+    private boolean inRotRange = false;
+
+    private final double targetDistance = 0.5;
+
     public AprilTagAlign(PhotonVision camera, Swerve base, int tagnum) {
         this.tagnum = tagnum;
         this.base = base;
@@ -51,16 +57,14 @@ public class AprilTagAlign extends CommandBase {
         //      Experiment until it ends up a certain distance from the tag
         //      The units are supposed to be in meters, but the calibration isn't great
 
-        /*do{
-            speeds.vxMetersPerSecond = 0.0;
-            speeds.vyMetersPerSecond = 0.0;
-            speeds.omegaRadiansPerSecond = 0.0;
-
-            //edit chassis speeds
-            
-            base.driveFromChassisSpeeds(new ChassisSpeeds());
-        }
-        while(//until a bound is satisfied);*/
+        
+        //LOOK AT LAST YEAR'S LIMELIGHT ALIGN FUNCTION TO FIGURE OUT HOW TO DO THIS lol...
+        speeds.vxMetersPerSecond = 0.0;
+        speeds.vyMetersPerSecond = 0.0;
+        speeds.omegaRadiansPerSecond = 0.0;
+        
+        base.driveFromChassisSpeeds(new ChassisSpeeds());
+        
         
         SmartDashboard.putNumber("Z Rotation", rotZ);
         SmartDashboard.putNumber("X Pos", posX);
@@ -70,5 +74,10 @@ public class AprilTagAlign extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         base.driveFromChassisSpeeds(new ChassisSpeeds());
+    }
+
+    @Override
+    public boolean isFinished(){
+        return inXRange && inYRange && inRotRange;
     }
 }
