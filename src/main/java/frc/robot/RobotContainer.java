@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -28,6 +29,8 @@ public class RobotContainer {
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton goForward = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+    private final JoystickButton move = new JoystickButton(driver, XboxController.Button.kA.value);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
@@ -54,8 +57,11 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
-        zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+        zeroGyro.onTrue(new InstantCommand(s_Swerve::zeroGyro));
         robotCentric.toggleOnTrue(new InstantCommand(s_Swerve::toggleFieldOriented));
+        goForward.onTrue(new PathWeave(s_Swerve));
+        move.onTrue(new MoveCommand(s_Swerve));
+
     }
 
     /**

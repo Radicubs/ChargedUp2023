@@ -44,6 +44,10 @@ public class Swerve extends SubsystemBase {
         fieldOriented = !fieldOriented;
     }
 
+    public void resetOdo() {
+        swerveOdometry.resetPosition(getYaw(), getModulePositions(), new Pose2d());
+    }
+
     public void drive(Translation2d translation, double rotation, boolean isOpenLoop) {
         SwerveModuleState[] swerveModuleStates =
             Constants.Swerve.swerveKinematics.toSwerveModuleStates(
@@ -86,10 +90,6 @@ public class Swerve extends SubsystemBase {
         return swerveOdometry.getPoseMeters();
     }
 
-    public void resetOdometry(Pose2d pose) {
-        swerveOdometry.resetPosition(getYaw(), getModulePositions(), pose);
-    }
-
     public SwerveModuleState[] getModuleStates(){
         SwerveModuleState[] states = new SwerveModuleState[4];
         for(SwerveModule mod : mSwerveMods){
@@ -117,7 +117,6 @@ public class Swerve extends SubsystemBase {
     @Override
     public void periodic(){
         swerveOdometry.update(getYaw(), getModulePositions());
-        System.out.println(fieldOriented);
 
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());
