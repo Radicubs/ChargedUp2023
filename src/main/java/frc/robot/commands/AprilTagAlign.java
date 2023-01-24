@@ -4,6 +4,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PhotonVision;
@@ -37,6 +38,12 @@ public class AprilTagAlign extends CommandBase {
         
         double rot;
         ChassisSpeeds speeds = new ChassisSpeeds();
+
+        Transform3d pose = target.getBestCameraToTarget();
+        double posX = pose.getX();
+        double posY = pose.getY();
+        double rotZ = Units.radiansToDegrees(pose.getRotation().getZ());
+
         //STEPS
         //Rotate Chassis until rot Z is within a bound close to 180
         //Move left/right until posY is within a bound close to 0
@@ -54,12 +61,7 @@ public class AprilTagAlign extends CommandBase {
             base.driveFromChassisSpeeds(new ChassisSpeeds());
         }
         while(//until a bound is satisfied);*/
-
-        Transform3d pose = target.getBestCameraToTarget();
-        double posX = pose.getX();
-        double posY = pose.getY();
-        double rotZ = pose.getRotation().getZ();
-
+        
         SmartDashboard.putNumber("Z Rotation", rotZ);
         SmartDashboard.putNumber("X Pos", posX);
         SmartDashboard.putNumber("Y Pos", posY);
