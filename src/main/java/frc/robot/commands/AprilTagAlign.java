@@ -85,13 +85,18 @@ public class AprilTagAlign extends CommandBase {
 
     public double PIDxspeed (double pos)
     {
-        if (pos > 4) { return 2; }
+        if (pos > 4)
+            return 2;
         return  (.5 * (pos - .3));
+
     }
 
     public double PIDyspeed (double pos)
     {
-        if (pos > 4) { return 2; }
+        if (pos > 4)
+            return -2;
+        if (pos < -4)
+            return 2;
         return  .5 * pos;
     }
 
