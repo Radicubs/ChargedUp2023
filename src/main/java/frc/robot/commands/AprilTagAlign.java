@@ -74,10 +74,10 @@ public class AprilTagAlign extends CommandBase {
     }
 
     private static double speedClamp(double val) { // TODO: Replace with constants
-        return MathUtil.clamp(MathUtil.applyDeadband(val, 0.1), 0, 4.5);
+        return MathUtil.clamp(MathUtil.applyDeadband(val, 0.1), -4.5, 4.5);
     }
 
     private static double rotClamp(double val) { // TODO: Replace with constants
-        return MathUtil.clamp(MathUtil.applyDeadband(val, 0.1), 0, Math.PI);
+        return MathUtil.clamp(MathUtil.applyDeadband(val, 0.1), -Math.PI, Math.PI);
     }
 }
