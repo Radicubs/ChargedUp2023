@@ -1,15 +1,14 @@
 package frc.robot.commands;
 
-import frc.robot.Constants;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class AprilTagAlign extends CommandBase {
 
@@ -17,18 +16,24 @@ public class AprilTagAlign extends CommandBase {
     private final Swerve base;
     private final PhotonVision camera;
 
-    private boolean inXRange = false;
-    private boolean inYRange = false;
-    private boolean inRotRange = false;
+    //TODO: Replace with constants
+    private final PIDController xspeed = new PIDController(1, 0, 0);
+    private final PIDController yspeed = new PIDController(1, 0, 0);
+    private final PIDController zrot = new PIDController(1, 0, 0);
 
-    private final double targetDistance = 0.5;
+    private boolean isFinished;
 
     public AprilTagAlign(PhotonVision camera, Swerve base, int tagnum) {
         this.tagnum = tagnum;
         this.base = base;
         this.camera = camera;
-        addRequirements(camera);
-        addRequirements(base);
+        addRequirements(camera, base);
+        xspeed.setSetpoint(0);
+        xspeed.setTolerance(1);
+        yspeed.setSetpoint(0);
+        yspeed.setTolerance(1);
+        zrot.setSetpoint(0);
+        zrot.setTolerance(1);
     }
 
     @Override
@@ -39,32 +44,17 @@ public class AprilTagAlign extends CommandBase {
     @Override
     public void execute() {
         PhotonTrackedTarget target = camera.getTarget(tagnum);
-        if(target == null) {
+        if (target == null) {
             return;
         }
-        
-        double rot;
-        ChassisSpeeds speeds = new ChassisSpeeds();
 
         Transform3d pose = target.getBestCameraToTarget();
         double posX = pose.getX();
         double posY = pose.getY();
         double rotZ = pose.getRotation().getZ();
 
-        //STEPS
-        //Rotate Chassis until rot Z is within a bound close to 180
-        //Move left/right until posY is within a bound close to 0
-        //Move forward/back until posX is within a set bound
-        //      Experiment until it ends up a certain distance from the tag
-        //      The units are supposed to be in meters, but the calibration isn't great
-
-        
-        //LOOK AT LAST YEAR'S LIMELIGHT ALIGN FUNCTION TO FIGURE OUT HOW TO DO THIS lol...
-
-        speeds.vxMetersPerSecond = PIDxspeed(posX);
-        speeds.vyMetersPerSecond = PIDyspeed(posY);
-        speeds.omegaRadiansPerSecond = PIDZRot(rotZ);
-
+        ChassisSpeeds speeds = new ChassisSpeeds(
+                speedClamp(xspeed.calculate(posX)), speedClamp(yspeed.calculate(posY)), rotClamp(zrot.calculate(rotZ)));
 
         base.driveFromChassisSpeeds(speeds);
 
@@ -79,29 +69,15 @@ public class AprilTagAlign extends CommandBase {
     }
 
     @Override
-    public boolean isFinished(){
-        return inXRange && inYRange && inRotRange;
+    public boolean isFinished() {
+        return xspeed.atSetpoint() && yspeed.atSetpoint() && zrot.atSetpoint();
     }
 
-    public double PIDxspeed (double pos)
-    {
-        if (pos > 4)
-            return 2;
-        return  (.5 * (pos - .3));
-
+    private static double speedClamp(double val) { // TODO: Replace with constants
+        return MathUtil.clamp(MathUtil.applyDeadband(val, 0.1), 0, 4.5);
     }
 
-    public double PIDyspeed (double pos)
-    {
-        if (pos > 4)
-            return -2;
-        if (pos < -4)
-            return 2;
-        return  .5 * pos;
-    }
-
-    public double PIDZRot (double ZRot)
-    {
-        return ZRot/3;
+    private static double rotClamp(double val) { // TODO: Replace with constants
+        return MathUtil.clamp(MathUtil.applyDeadband(val, 0.1), 0, Math.PI);
     }
 }
