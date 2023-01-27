@@ -63,7 +63,7 @@ public class AprilTagAlign extends CommandBase {
 
         speeds.vxMetersPerSecond = PIDxyspeeds(posX);
         speeds.vyMetersPerSecond = PIDxyspeeds(posY);
-        speeds.omegaRadiansPerSecond = 10.0;
+        speeds.omegaRadiansPerSecond = PIDZRot(rotZ);
 
 
         base.driveFromChassisSpeeds(speeds);
@@ -91,6 +91,6 @@ public class AprilTagAlign extends CommandBase {
 
     public double PIDZRot (double ZRot)
     {
-        return 0.0;
+        return ZRot/2;
     }
 }
