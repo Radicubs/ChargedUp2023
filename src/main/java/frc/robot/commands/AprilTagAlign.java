@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import frc.robot.Constants;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.geometry.Transform3d;
@@ -48,7 +49,7 @@ public class AprilTagAlign extends CommandBase {
         Transform3d pose = target.getBestCameraToTarget();
         double posX = pose.getX();
         double posY = pose.getY();
-        double rotZ = Units.radiansToDegrees(pose.getRotation().getZ());
+        double rotZ = pose.getRotation().getZ();
 
         //STEPS
         //Rotate Chassis until rot Z is within a bound close to 180
@@ -59,13 +60,14 @@ public class AprilTagAlign extends CommandBase {
 
         
         //LOOK AT LAST YEAR'S LIMELIGHT ALIGN FUNCTION TO FIGURE OUT HOW TO DO THIS lol...
-        speeds.vxMetersPerSecond = 0.0;
-        speeds.vyMetersPerSecond = 0.0;
-        speeds.omegaRadiansPerSecond = 0.0;
-        
-        base.driveFromChassisSpeeds(new ChassisSpeeds());
-        
-        
+
+        speeds.vxMetersPerSecond = PIDxyspeeds(posX);
+        speeds.vyMetersPerSecond = PIDxyspeeds(posY);
+        speeds.omegaRadiansPerSecond = 10.0;
+
+
+        base.driveFromChassisSpeeds(speeds);
+
         SmartDashboard.putNumber("Z Rotation", rotZ);
         SmartDashboard.putNumber("X Pos", posX);
         SmartDashboard.putNumber("Y Pos", posY);
@@ -79,5 +81,16 @@ public class AprilTagAlign extends CommandBase {
     @Override
     public boolean isFinished(){
         return inXRange && inYRange && inRotRange;
+    }
+
+    public double PIDxyspeeds (double pos)
+    {
+        if (pos > 4) { return 2; }
+        return  .5 * pos;
+    }
+
+    public double PIDZRot (double ZRot)
+    {
+        return 0.0;
     }
 }
