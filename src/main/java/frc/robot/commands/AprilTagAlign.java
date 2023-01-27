@@ -61,8 +61,8 @@ public class AprilTagAlign extends CommandBase {
         
         //LOOK AT LAST YEAR'S LIMELIGHT ALIGN FUNCTION TO FIGURE OUT HOW TO DO THIS lol...
 
-        speeds.vxMetersPerSecond = PIDxyspeeds(posX);
-        speeds.vyMetersPerSecond = PIDxyspeeds(posY);
+        speeds.vxMetersPerSecond = PIDxspeed(posX);
+        speeds.vyMetersPerSecond = PIDyspeed(posY);
         speeds.omegaRadiansPerSecond = PIDZRot(rotZ);
 
 
@@ -83,7 +83,13 @@ public class AprilTagAlign extends CommandBase {
         return inXRange && inYRange && inRotRange;
     }
 
-    public double PIDxyspeeds (double pos)
+    public double PIDxspeed (double pos)
+    {
+        if (pos > 4) { return 2; }
+        return  (.5 * (pos - .3));
+    }
+
+    public double PIDyspeed (double pos)
     {
         if (pos > 4) { return 2; }
         return  .5 * pos;
@@ -91,6 +97,6 @@ public class AprilTagAlign extends CommandBase {
 
     public double PIDZRot (double ZRot)
     {
-        return ZRot/2;
+        return ZRot/3;
     }
 }
