@@ -74,6 +74,7 @@ public class SwerveModule {
     }
 
     public Rotation2d getCanCoder(){
+//        return Rotation2d.fromDegrees(0);
         return Rotation2d.fromDegrees(angleEncoder.getAbsolutePosition());
     }
 
@@ -82,7 +83,7 @@ public class SwerveModule {
         mAngleMotor.setSelectedSensorPosition(absolutePosition);
     }
 
-    private void configAngleEncoder(){        
+    private void configAngleEncoder() {
         angleEncoder.configFactoryDefault();
         angleEncoder.configAllSettings(Robot.ctreConfigs.swerveCanCoderConfig);
     }

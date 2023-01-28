@@ -30,25 +30,22 @@ public class RobotContainer {
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton goForward = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+    private final JoystickButton move = new JoystickButton(driver, XboxController.Button.kA.value);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final PhotonVision camera = new PhotonVision();
 
 
-    /**
-     * The container for the robot. Contains subsystems, OI devices, and commands.
-     */
+    /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         s_Swerve.setDefaultCommand(
-                new TeleopSwerve(
-                        s_Swerve,
-                        () -> -driver.getRawAxis(translationAxis),
-                        () -> -driver.getRawAxis(strafeAxis),
-                        () -> -driver.getRawAxis(rotationAxis),
-                        () -> robotCentric.getAsBoolean()
-                )
-        );
+            new TeleopSwerve(
+                s_Swerve, 
+                () -> -driver.getRawAxis(translationAxis), 
+                () -> -driver.getRawAxis(strafeAxis), 
+                () -> -driver.getRawAxis(rotationAxis)));
 
         // Configure the button bindings
         configureButtonBindings();
@@ -62,7 +59,11 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
-        zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+        zeroGyro.onTrue(new InstantCommand(s_Swerve::zeroGyro));
+        robotCentric.toggleOnTrue(new InstantCommand(s_Swerve::toggleFieldOriented));
+        goForward.onTrue(new PathWeave(s_Swerve));
+        move.onTrue(new MoveCommand(s_Swerve));
+
     }
 
     /**
