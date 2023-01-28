@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PhotonVision;
@@ -17,23 +18,21 @@ public class AprilTagAlign extends CommandBase {
     private final PhotonVision camera;
 
     //TODO: Replace with constants
-    private final PIDController xspeed = new PIDController(1, 0, 0);
-    private final PIDController yspeed = new PIDController(1, 0, 0);
-    private final PIDController zrot = new PIDController(1, 0, 0);
-
-    private boolean isFinished;
+    private final PIDController xspeed = new PIDController(-0.22, 0, 0.01);
+    private final PIDController yspeed = new PIDController(-0.22, 0, 0.01);
+    private final PIDController zrot = new PIDController(-0.07, 0, 0);
 
     public AprilTagAlign(PhotonVision camera, Swerve base, int tagnum) {
         this.tagnum = tagnum;
         this.base = base;
         this.camera = camera;
         addRequirements(camera, base);
-        xspeed.setSetpoint(0);
-        xspeed.setTolerance(1);
+        xspeed.setSetpoint(0.25);
+        xspeed.setTolerance(0.25);
         yspeed.setSetpoint(0);
-        yspeed.setTolerance(1);
-        zrot.setSetpoint(0);
-        zrot.setTolerance(1);
+        yspeed.setTolerance(0.15);
+        zrot.setSetpoint(Math.PI);
+        zrot.setTolerance(Units.degreesToRadians(10));
     }
 
     @Override
@@ -45,6 +44,7 @@ public class AprilTagAlign extends CommandBase {
     public void execute() {
         PhotonTrackedTarget target = camera.getTarget(tagnum);
         if (target == null) {
+            base.driveFromChassisSpeeds(new ChassisSpeeds());
             return;
         }
 
