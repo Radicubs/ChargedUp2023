@@ -16,23 +16,24 @@ public class AprilTagAlign extends CommandBase {
     private final int tagnum;
     private final Swerve base;
     private final PhotonVision camera;
+    private boolean done = false;
 
     //TODO: Replace with constants
-    private final PIDController xspeed = new PIDController(-0.22, 0, 0.01);
+    /*private final PIDController xspeed = new PIDController(-0.22, 0, 0.01);
     private final PIDController yspeed = new PIDController(-0.22, 0, 0.01);
-    private final PIDController zrot = new PIDController(-0.07, 0, 0);
+    private final PIDController zrot = new PIDController(-0.07, 0, 0);*/
 
     public AprilTagAlign(PhotonVision camera, Swerve base, int tagnum) {
         this.tagnum = tagnum;
         this.base = base;
         this.camera = camera;
         addRequirements(camera, base);
-        xspeed.setSetpoint(0.25);
+        /*xspeed.setSetpoint(0.25);
         xspeed.setTolerance(0.25);
         yspeed.setSetpoint(0);
         yspeed.setTolerance(0.15);
         zrot.setSetpoint(Math.PI);
-        zrot.setTolerance(Units.degreesToRadians(10));
+        zrot.setTolerance(Units.degreesToRadians(10));*/
     }
 
     @Override
@@ -52,13 +53,48 @@ public class AprilTagAlign extends CommandBase {
         double posX = pose.getX();
         double posY = pose.getY();
         double rotZ = pose.getRotation().getZ();
+        double yaw = target.getYaw();
 
-        ChassisSpeeds speeds = new ChassisSpeeds(
-                speedClamp(xspeed.calculate(posX)), speedClamp(yspeed.calculate(posY)), rotClamp(zrot.calculate(rotZ)));
+        
+
+
+        if(rotZ < 0){
+            rotZ += Math.PI;
+        }
+        else{
+            rotZ -= Math.PI;
+        }
+
+        ChassisSpeeds speeds = new ChassisSpeeds();
+
+        if(Math.abs(yaw) > 6.5){
+            if(yaw > 0){
+                speeds.omegaRadiansPerSecond = 0.25;
+            }
+            else{
+                speeds.omegaRadiansPerSecond = -0.25;
+            }
+        }
+        else{
+            if(Math.abs(posX - 0.5) < 0.05){
+                done = true;
+                return;
+            }
+            if(posX < 0.5){
+                speeds.vxMetersPerSecond = -0.2;
+            }
+            else if(posX > 0.85){
+                speeds.vxMetersPerSecond = 0.5;
+            }
+            else{
+                speeds.vxMetersPerSecond = 0.2;
+            }
+        }
 
         base.driveFromChassisSpeeds(speeds);
 
         SmartDashboard.putNumber("Z Rotation", rotZ);
+        SmartDashboard.putNumber("Apriltag Yaw", yaw);
         SmartDashboard.putNumber("X Pos", posX);
         SmartDashboard.putNumber("Y Pos", posY);
     }
@@ -70,7 +106,8 @@ public class AprilTagAlign extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return xspeed.atSetpoint() && yspeed.atSetpoint() && zrot.atSetpoint();
+        //return xspeed.atSetpoint() && yspeed.atSetpoint() && zrot.atSetpoint();
+        return done;
     }
 
     private static double speedClamp(double val) { // TODO: Replace with constants

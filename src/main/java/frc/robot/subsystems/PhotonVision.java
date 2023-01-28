@@ -11,7 +11,7 @@ public class PhotonVision extends SubsystemBase {
     private final PhotonCamera camera;
 
     public PhotonVision() {
-        camera = new PhotonCamera("photonvision");
+        camera = new PhotonCamera("raspberry");
     }
 
     public PhotonTrackedTarget getTarget(int targetID) {
