@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import frc.robot.SwerveModule;
 import frc.robot.Constants;
 
@@ -18,16 +17,16 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import java.util.function.DoubleSupplier;
+
 public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
-    public ADXRS450_Gyro gyro;
     private boolean fieldOriented;
+    private final DoubleSupplier rotationSupplier;
 
-    public Swerve() {
-        gyro = new ADXRS450_Gyro();
-        gyro.calibrate();
-        zeroGyro();
+    public Swerve(DoubleSupplier rotationSupplier) {
+        this.rotationSupplier = rotationSupplier;
         fieldOriented = false;
 
         mSwerveMods = new SwerveModule[] {
@@ -106,12 +105,9 @@ public class Swerve extends SubsystemBase {
         return positions;
     }
 
-    public void zeroGyro(){
-        gyro.reset();
-    }
-
     public Rotation2d getYaw() {
-        return (Constants.Swerve.invertGyro) ? Rotation2d.fromDegrees(360 - gyro.getAngle()) : Rotation2d.fromDegrees(gyro.getAngle());
+        return (Constants.Swerve.invertGyro) ?
+                Rotation2d.fromDegrees(360 - rotationSupplier.getAsDouble()) : Rotation2d.fromDegrees(rotationSupplier.getAsDouble());
     }
 
     @Override

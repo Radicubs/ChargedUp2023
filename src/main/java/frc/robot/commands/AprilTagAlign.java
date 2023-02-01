@@ -2,7 +2,10 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,16 +20,21 @@ public class AprilTagAlign extends CommandBase {
     private final Swerve base;
     private final PhotonVision camera;
     private boolean done = false;
+    private final Transform3d offset;
 
     //TODO: Replace with constants
     /*private final PIDController xspeed = new PIDController(-0.22, 0, 0.01);
     private final PIDController yspeed = new PIDController(-0.22, 0, 0.01);
     private final PIDController zrot = new PIDController(-0.07, 0, 0);*/
+    public AprilTagAlign(PhotonVision camera, Swerve base, int tagnum, TagAlignment alignment) {
+        this(camera, base, tagnum, alignment.offset);
+    }
 
-    public AprilTagAlign(PhotonVision camera, Swerve base, int tagnum) {
+    public AprilTagAlign(PhotonVision camera, Swerve base, int tagnum, Transform3d offset) {
         this.tagnum = tagnum;
         this.base = base;
         this.camera = camera;
+        this.offset = offset.inverse();
         addRequirements(camera, base);
         /*xspeed.setSetpoint(0.25);
         xspeed.setTolerance(0.25);
@@ -49,7 +57,7 @@ public class AprilTagAlign extends CommandBase {
             return;
         }
 
-        Transform3d pose = target.getBestCameraToTarget();
+        Transform3d pose = target.getBestCameraToTarget().plus(offset);
         double posX = pose.getX();
         double posY = pose.getY();
         double rotZ = pose.getRotation().getZ();
@@ -116,5 +124,18 @@ public class AprilTagAlign extends CommandBase {
 
     private static double rotClamp(double val) { // TODO: Replace with constants
         return MathUtil.clamp(MathUtil.applyDeadband(val, 0.1), -Math.PI, Math.PI);
+    }
+
+    public enum TagAlignment {
+        // TODO: change x offset in accordance to camera position on robot
+        LEFT(new Transform3d(new Translation3d(0.40639, 0.541, 0), new Rotation3d())),
+        RIGHT(new Transform3d(new Translation3d(0.40639, -0.541, 0), new Rotation3d())),
+        CENTER(new Transform3d(new Translation3d(0.40639, 0, 0), new Rotation3d()));
+
+        public final Transform3d offset;
+
+        TagAlignment(Transform3d offset) {
+            this.offset = offset;
+        }
     }
 }

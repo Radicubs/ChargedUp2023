@@ -6,6 +6,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -19,16 +20,30 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.Swerve;
 
+import javax.xml.crypto.dsig.Transform;
 import java.util.List;
+import java.util.function.DoubleSupplier;
 
 public class PathWeave extends CommandBase {
+
+    public static PathWeave fromFieldCoordinates(Swerve swerve, List<Translation2d> points, Pose2d position) {
+        return new PathWeave(swerve, position, points);
+    }
+
+    public static PathWeave fromRelativeCoordinates(Swerve swerve, List<Translation2d> points, Pose2d position) {
+        return new PathWeave(swerve, points, position);
+    }
+    private static final Pose2d PATH_WEAVE_TOLERANCE = new Pose2d(0.15, 0.15, Rotation2d.fromDegrees(10));
+    private static final TrajectoryConfig config =
+            new TrajectoryConfig(Constants.Swerve.maxSpeed, 1)
+                    .setKinematics(Constants.Swerve.swerveKinematics);
 
     private final Swerve swerve;
     private final HolonomicDriveController controller;
     private final Trajectory trajectory;
     private final Timer timer;
 
-    public PathWeave(Swerve swerve) {
+    private PathWeave(Swerve swerve, Trajectory trajectory) {
         this.swerve = swerve;
         addRequirements(swerve);
         timer = new Timer();
@@ -36,13 +51,18 @@ public class PathWeave extends CommandBase {
                 new PIDController(0.5, 0, 0),
                 new PIDController(0.5, 0, 0),
                 new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(6.28, 3.14)));
-        TrajectoryConfig config = new TrajectoryConfig(Constants.Swerve.maxSpeed, 1)
-                .setKinematics(Constants.Swerve.swerveKinematics);
-        trajectory = TrajectoryGenerator.generateTrajectory(
-                new Pose2d(),
-                List.of(),
-                new Pose2d(2, 0, Rotation2d.fromDegrees(0)),
-                config);
+        this.trajectory = trajectory;
+    }
+
+    // Constructor to move robot a magnitude in relation to its current position, ex move 1 meter backwards
+    private PathWeave(Swerve swerve, List<Translation2d> points, Pose2d delta) {
+        this(swerve, TrajectoryGenerator.generateTrajectory(new Pose2d(), points, delta, config).transformBy(
+                new Transform2d(delta.getTranslation(), delta.getRotation())));
+    }
+
+    // Constructor to move robot to a specific field position, ex move to 1, 0
+    private PathWeave(Swerve swerve, Pose2d toPos, List<Translation2d> points) {
+        this(swerve, TrajectoryGenerator.generateTrajectory(swerve.getPose(), points, toPos, config));
     }
 
     @Override
