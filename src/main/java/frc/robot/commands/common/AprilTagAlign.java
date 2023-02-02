@@ -1,13 +1,10 @@
 package frc.robot.commands.common;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PhotonVision;
@@ -26,16 +23,16 @@ public class AprilTagAlign extends CommandBase {
     /*private final PIDController xspeed = new PIDController(-0.22, 0, 0.01);
     private final PIDController yspeed = new PIDController(-0.22, 0, 0.01);
     private final PIDController zrot = new PIDController(-0.07, 0, 0);*/
-    public AprilTagAlign(PhotonVision camera, Swerve base, int tagnum, TagAlignment alignment) {
-        this(camera, base, tagnum, alignment.offset);
+    public AprilTagAlign(Swerve base, PhotonVision vision, int tagnum, TagAlignment alignment) {
+        this(base, vision, tagnum, alignment.offset);
     }
 
-    public AprilTagAlign(PhotonVision camera, Swerve base, int tagnum, Transform3d offset) {
+    public AprilTagAlign(Swerve base, PhotonVision vision, int tagnum, Transform3d offset) {
         this.tagnum = tagnum;
         this.base = base;
-        this.camera = camera;
+        this.camera = vision;
         this.offset = offset.inverse();
-        addRequirements(camera, base);
+        addRequirements(vision, base);
         /*xspeed.setSetpoint(0.25);
         xspeed.setTolerance(0.25);
         yspeed.setSetpoint(0);

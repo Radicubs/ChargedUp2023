@@ -15,7 +15,7 @@ public class LowRiskPlace extends SequentialCommandGroup {
 
     // Routine that scores preloaded game piece, then exits the community for mobility points
     public LowRiskPlace(Swerve swerve, PhotonVision vision, boolean isBlue) {
-        addCommands(new AprilTagAlign(vision, swerve, isBlue ? 8 : 1, AprilTagAlign.TagAlignment.LEFT));
+        addCommands(new AprilTagAlign(swerve, vision, isBlue ? 8 : 1, AprilTagAlign.TagAlignment.LEFT));
         // addCommands(placement command);
         addCommands(PathWeave.fromFieldCoordinates(swerve, List.of(new Translation2d(0.25, 0.92073984)),
                 new Pose2d(new Translation2d(5.6896, 0.92073984), new Rotation2d())));

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.P0.P0CommandGenerator;
 import frc.robot.commands.common.AutoCommandGenerator;
 import frc.robot.commands.teleop.TeleopSwerve;
+import frc.robot.commands.tests.TestCommandGenerator;
 import frc.robot.subsystems.*;
 
 /**
@@ -92,7 +93,7 @@ public class RobotContainer {
         P2(null),
         P3(null),
         P4(null),
-        TESTS(null);
+        TESTS(new TestCommandGenerator());
 
         private final AutoCommandGenerator generator;
 
