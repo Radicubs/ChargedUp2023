@@ -5,7 +5,9 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 
+import java.util.function.DoubleSupplier;
+
 public interface AutoCommandGenerator {
 
-    Command generate(Swerve swerve, PhotonVision vision, boolean alliance, RobotContainer.AutoDifficulty difficulty);
+    Command generate(Swerve swerve, PhotonVision vision, DoubleSupplier roll, boolean alliance, RobotContainer.AutoDifficulty difficulty);
 }

@@ -14,6 +14,8 @@ import frc.robot.commands.teleop.TeleopSwerve;
 import frc.robot.commands.tests.TestCommandGenerator;
 import frc.robot.subsystems.*;
 
+import java.util.function.DoubleSupplier;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -76,15 +78,16 @@ public class RobotContainer {
 
 
     public Command getAutonomousCommand() {
-        return startingPos.getSelected().generate(swerve, camera, allianceColor.getSelected(), difficulty.getSelected());
+        return startingPos.getSelected().generate(swerve, camera, navx::getRoll, allianceColor.getSelected(), difficulty.getSelected());
     }
 
     public enum AutoDifficulty {
         NoRisk,
-        LowRisk,
+        LowRiskPlace,
+        LowRiskStation,
         MidRisk,
         HighRisk,
-        Impossiblw
+        Impossible
     }
 
     private enum StartingPosition {
@@ -97,8 +100,8 @@ public class RobotContainer {
 
         private final AutoCommandGenerator generator;
 
-        public Command generate(Swerve swerve, PhotonVision vision, boolean alliance, RobotContainer.AutoDifficulty difficulty) {
-            return generator.generate(swerve, vision, alliance, difficulty);
+        public Command generate(Swerve swerve, PhotonVision vision, DoubleSupplier roll, boolean alliance, RobotContainer.AutoDifficulty difficulty) {
+            return generator.generate(swerve, vision, roll, alliance, difficulty);
         }
 
         StartingPosition(AutoCommandGenerator generator) {

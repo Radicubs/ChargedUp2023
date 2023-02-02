@@ -10,8 +10,9 @@ import java.util.List;
 
 public class NoRisk extends SequentialCommandGroup {
 
+    // Routine that simply leaves the community and maintains heading
     public NoRisk(Swerve swerve) {
-        addCommands(PathWeave.fromRelativeCoordinates(swerve, List.of(), new Pose2d(-1, 0, new Rotation2d())));
+        addCommands(PathWeave.fromRelativeCoordinates(swerve, new Pose2d(-1, 0, new Rotation2d(180))));
     }
 
 }

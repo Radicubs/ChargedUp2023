@@ -22,12 +22,12 @@ import java.util.List;
 
 public class PathWeave extends CommandBase {
 
-    public static PathWeave fromFieldCoordinates(Swerve swerve, List<Translation2d> points, Pose2d position) {
-        return new PathWeave(swerve, position, points);
+    public static PathWeave fromFieldCoordinates(Swerve swerve, Pose2d position, Translation2d... points) {
+        return new PathWeave(swerve, position, List.of(points));
     }
 
-    public static PathWeave fromRelativeCoordinates(Swerve swerve, List<Translation2d> points, Pose2d position) {
-        return new PathWeave(swerve, points, position);
+    public static PathWeave fromRelativeCoordinates(Swerve swerve, Pose2d position, Translation2d... points) {
+        return new PathWeave(swerve, List.of(points), position);
     }
     private static final Pose2d PATH_WEAVE_TOLERANCE = new Pose2d(0.15, 0.15, Rotation2d.fromDegrees(10));
     private static final TrajectoryConfig config =
