@@ -1,15 +1,16 @@
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
-import frc.robot.commands.*;
+import frc.robot.commands.P0.P0CommandGenerator;
+import frc.robot.commands.common.AutoCommandGenerator;
+import frc.robot.commands.teleop.TeleopSwerve;
 import frc.robot.subsystems.*;
 
 /**
@@ -30,6 +31,11 @@ public class RobotContainer {
     private final PhotonVision camera;
     private final Navx navx;
 
+    private final SendableChooser<Boolean> allianceColor;
+    private final SendableChooser<StartingPosition> startingPos;
+    private final SendableChooser<AutoDifficulty> difficulty;
+
+
 
     public RobotContainer() {
         camera = new PhotonVision();
@@ -44,6 +50,21 @@ public class RobotContainer {
 
         // Configure the button bindings
         configureButtonBindings();
+
+        allianceColor = new SendableChooser<>();
+        allianceColor.setDefaultOption("Blue", true);
+        allianceColor.addOption("Red", false);
+        SmartDashboard.putData("Alliance Color", allianceColor);
+
+        startingPos = new SendableChooser<>();
+        for(StartingPosition pos : StartingPosition.values()) startingPos.addOption(pos.toString(), pos);
+        SmartDashboard.putData("Starting Position", startingPos);
+
+        difficulty = new SendableChooser<>();
+        for(AutoDifficulty diff : AutoDifficulty.values()) difficulty.addOption(diff.toString(), diff);
+        SmartDashboard.putData("Auto Difficulty", difficulty);
+
+        SmartDashboard.updateValues();
     }
 
     private void configureButtonBindings() {
@@ -51,7 +72,36 @@ public class RobotContainer {
 
     }
 
+
+
     public Command getAutonomousCommand() {
-        return new AprilTagAlign(camera, swerve, 1, new Transform3d());
+        return startingPos.getSelected().generate(swerve, camera, allianceColor.getSelected(), difficulty.getSelected());
+    }
+
+    public enum AutoDifficulty {
+        NoRisk,
+        LowRisk,
+        MidRisk,
+        HighRisk,
+        Impossiblw
+    }
+
+    private enum StartingPosition {
+        P0(new P0CommandGenerator()),
+        P1(null),
+        P2(null),
+        P3(null),
+        P4(null),
+        TESTS(null);
+
+        private final AutoCommandGenerator generator;
+
+        public Command generate(Swerve swerve, PhotonVision vision, boolean alliance, RobotContainer.AutoDifficulty difficulty) {
+            return generator.generate(swerve, vision, alliance, difficulty);
+        }
+
+        StartingPosition(AutoCommandGenerator generator) {
+            this.generator = generator;
+        }
     }
 }

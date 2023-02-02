@@ -1,6 +1,5 @@
-package frc.robot.commands;
+package frc.robot.commands.common;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -9,14 +8,14 @@ import frc.robot.subsystems.Swerve;
 
 import java.util.function.DoubleSupplier;
 
-public class ChargeStationAlign extends CommandBase {
+public class ChargeStationBalance extends CommandBase {
     private static final SwerveModuleState lockedState =
             new SwerveModuleState(0, Rotation2d.fromDegrees(90));
 
     private final Swerve swerve;
     private final DoubleSupplier roll;
 
-    public ChargeStationAlign(Swerve swerve, DoubleSupplier roll) {
+    public ChargeStationBalance(Swerve swerve, DoubleSupplier roll) {
         this.swerve = swerve;
         this.roll = roll;
         addRequirements(swerve);
