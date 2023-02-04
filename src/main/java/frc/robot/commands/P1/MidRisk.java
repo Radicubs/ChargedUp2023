@@ -1,4 +1,4 @@
-package frc.robot.commands.P0;
+package frc.robot.commands.P1;
 
 import frc.robot.commands.common.AprilTagAlign;
 import frc.robot.commands.common.SequentialCommand;
@@ -7,7 +7,7 @@ import frc.robot.subsystems.Swerve;
 
 import java.util.function.DoubleSupplier;
 
-public class MidRisk extends P0AutoCommand {
+public class MidRisk extends P1AutoCommand {
 
     // Scores preloaded game piece, then goes for station
     public MidRisk(Swerve swerve, PhotonVision vision, DoubleSupplier roll, boolean isBlue) {

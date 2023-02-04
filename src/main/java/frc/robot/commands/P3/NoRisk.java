@@ -1,17 +1,16 @@
-package frc.robot.commands.P0;
+package frc.robot.commands.P3;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.P3.P3AutoCommand;
 import frc.robot.commands.common.PathWeave;
 import frc.robot.subsystems.Swerve;
 
-import java.util.List;
-
-public class NoRisk extends P0AutoCommand {
+public class NoRisk extends P3AutoCommand {
 
     // Routine that simply leaves the community and maintains heading
     public NoRisk(Swerve swerve, boolean isBlue) {
+        //TODO
         super(swerve, isBlue);
         addCommands(PathWeave.fromRelativeCoordinates(swerve, new Pose2d(-1, 0, new Rotation2d(180))));
     }

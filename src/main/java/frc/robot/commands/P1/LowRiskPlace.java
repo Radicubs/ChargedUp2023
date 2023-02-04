@@ -1,4 +1,4 @@
-package frc.robot.commands.P0;
+package frc.robot.commands.P1;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -9,9 +9,7 @@ import frc.robot.commands.common.SequentialCommand;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 
-import java.util.List;
-
-public class LowRiskPlace extends P0AutoCommand {
+public class LowRiskPlace extends P1AutoCommand {
 
     // Routine that scores preloaded game piece, then exits the community for mobility points
     public LowRiskPlace(Swerve swerve, PhotonVision vision, boolean isBlue) {

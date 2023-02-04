@@ -1,14 +1,20 @@
-package frc.robot.commands.P0;
+package frc.robot.commands.P1;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
+import frc.robot.commands.P1.HighRisk;
+import frc.robot.commands.P1.LowRiskPlace;
+import frc.robot.commands.P1.LowRiskStation;
+import frc.robot.commands.P1.MidRisk;
+import frc.robot.commands.P1.NoRisk;
+import frc.robot.commands.P1.*;
 import frc.robot.commands.common.AutoCommandGenerator;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 
 import java.util.function.DoubleSupplier;
 
-public class P0CommandGenerator implements AutoCommandGenerator {
+public class P1CommandGenerator implements AutoCommandGenerator {
     @Override
     public Command generate(Swerve swerve, PhotonVision vision, DoubleSupplier roll, boolean isBlue, RobotContainer.AutoDifficulty difficulty) {
         switch(difficulty) {
