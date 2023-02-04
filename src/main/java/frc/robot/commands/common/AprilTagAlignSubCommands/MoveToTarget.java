@@ -66,7 +66,7 @@ public class MoveToTarget extends CommandBase {
             speeds.vxMetersPerSecond = (posX > distance) ? 0.2 : -0.2;
         }
         else{
-            speeds.vxMetersPerSecond = (posX > distance) ? 1 : -1;
+            speeds.vxMetersPerSecond = (posX > distance) ? 0.75 : -0.75;
         }
 
         base.driveFromChassisSpeeds(speeds);
