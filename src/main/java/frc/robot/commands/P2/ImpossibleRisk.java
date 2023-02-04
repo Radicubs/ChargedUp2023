@@ -1,8 +1,8 @@
 package frc.robot.commands.P2;
 
-import frc.robot.commands.P1.HighRisk;
-import frc.robot.commands.P1.LowRiskStation;
-import frc.robot.commands.P1.P1AutoCommand;
+import frc.robot.commands.P2.HighRisk;
+import frc.robot.commands.P2.LowRiskStation;
+import frc.robot.commands.P2.P2AutoCommand;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 
