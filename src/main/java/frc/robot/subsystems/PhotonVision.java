@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PhotonVision extends SubsystemBase {
     //the string is the name of the NetworkTable that PhotonVision is broadcasting info over
@@ -27,6 +28,4 @@ public class PhotonVision extends SubsystemBase {
         }
         return null;
     }
-
-
 }

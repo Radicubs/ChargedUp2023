@@ -1,9 +1,12 @@
 package frc.robot.commands.teleop;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.subsystems.Swerve;
+import frc.robot.Constants;
 
 public class MoveCommand extends CommandBase {
 
@@ -28,6 +31,7 @@ public class MoveCommand extends CommandBase {
 //        if((Math.abs(base.swerveOdometry.getPoseMeters().getY() - 0.3) < 0.01)) {
 //            base.driveFromChassisSpeeds(new ChassisSpeeds(0.5, 0, 0));
 //        }
+        base.rotateAroundPoint(new Translation2d(-0.5 -(Constants.Swerve.wheelBase / 2), 0), -0.4);
     }
 
     @Override

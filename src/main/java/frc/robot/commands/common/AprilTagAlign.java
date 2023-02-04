@@ -1,14 +1,19 @@
 package frc.robot.commands.common;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
+import frc.robot.Constants;
+import javax.swing.GroupLayout.Alignment;
+
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class AprilTagAlign extends CommandBase {
@@ -17,28 +22,18 @@ public class AprilTagAlign extends CommandBase {
     private final Swerve base;
     private final PhotonVision camera;
     private boolean done = false;
-    private final Transform3d offset;
+    private final double offset;
 
-    //TODO: Replace with constants
-    /*private final PIDController xspeed = new PIDController(-0.22, 0, 0.01);
-    private final PIDController yspeed = new PIDController(-0.22, 0, 0.01);
-    private final PIDController zrot = new PIDController(-0.07, 0, 0);*/
     public AprilTagAlign(Swerve base, PhotonVision vision, int tagnum, TagAlignment alignment) {
         this(base, vision, tagnum, alignment.offset);
     }
 
-    public AprilTagAlign(Swerve base, PhotonVision vision, int tagnum, Transform3d offset) {
+    public AprilTagAlign(Swerve base, PhotonVision vision, int tagnum, double offset) {
         this.tagnum = tagnum;
         this.base = base;
         this.camera = vision;
-        this.offset = offset.inverse();
+        this.offset = offset;
         addRequirements(vision, base);
-        /*xspeed.setSetpoint(0.25);
-        xspeed.setTolerance(0.25);
-        yspeed.setSetpoint(0);
-        yspeed.setTolerance(0.15);
-        zrot.setSetpoint(Math.PI);
-        zrot.setTolerance(Units.degreesToRadians(10));*/
     }
 
     @Override
@@ -54,14 +49,11 @@ public class AprilTagAlign extends CommandBase {
             return;
         }
 
-        Transform3d pose = target.getBestCameraToTarget().plus(offset);
+        Transform3d pose = target.getBestCameraToTarget();;
         double posX = pose.getX();
-        double posY = pose.getY();
+        double posY = pose.getY() + offset;
         double rotZ = pose.getRotation().getZ();
         double yaw = target.getYaw();
-
-        
-
 
         if(rotZ < 0){
             rotZ += Math.PI;
@@ -71,30 +63,39 @@ public class AprilTagAlign extends CommandBase {
         }
 
         ChassisSpeeds speeds = new ChassisSpeeds();
-
-        if(Math.abs(yaw) > 6.5){
-            if(yaw > 0){
-                speeds.omegaRadiansPerSecond = 0.25;
-            }
-            else{
-                speeds.omegaRadiansPerSecond = -0.25;
-            }
+        
+        // must be within acceptable yaw before it starts moving fw
+        if(Math.abs(yaw) > 8){
+            speeds.omegaRadiansPerSecond = (yaw > 0) ? 0.25 : -0.25;
+            base.driveFromChassisSpeeds(speeds);
+            return;
         }
-        else{
-            if(Math.abs(posX - 0.5) < 0.05){
+
+
+        if(Math.abs(yaw) > 4){
+            // yaw correction
+            speeds.omegaRadiansPerSecond = (yaw > 0) ? 0.25 : -0.25;
+        }
+        if(Math.abs(posX - 0.5) < 0.05){
+            if(Math.abs(rotZ) < 0.05){
                 done = true;
+                System.out.println(rotZ);
                 return;
             }
-            if(posX < 0.5){
-                speeds.vxMetersPerSecond = -0.2;
-            }
-            else if(posX > 0.85){
-                speeds.vxMetersPerSecond = 0.5;
-            }
             else{
-                speeds.vxMetersPerSecond = 0.2;
+                System.out.println("Rotating around outside point");
+                base.rotateAroundPoint(new Translation2d(-0.5 - (Constants.Swerve.wheelBase / 2), 0), (yaw > 0) ? -0.3 : 0.3);
             }
+            return;
         }
+        else if(Math.abs(posX - 0.5) < 0.4){
+            // move slow to target if far
+            speeds.vxMetersPerSecond = (posX > 0.5) ? 0.2 : -0.2;
+        }
+        else{
+            speeds.vxMetersPerSecond = (posX > 0.5) ? 0.5 : -0.5;
+        }
+        
 
         base.driveFromChassisSpeeds(speeds);
 
@@ -111,27 +112,18 @@ public class AprilTagAlign extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        //return xspeed.atSetpoint() && yspeed.atSetpoint() && zrot.atSetpoint();
         return done;
-    }
-
-    private static double speedClamp(double val) { // TODO: Replace with constants
-        return MathUtil.clamp(MathUtil.applyDeadband(val, 0.1), -4.5, 4.5);
-    }
-
-    private static double rotClamp(double val) { // TODO: Replace with constants
-        return MathUtil.clamp(MathUtil.applyDeadband(val, 0.1), -Math.PI, Math.PI);
     }
 
     public enum TagAlignment {
         // TODO: change x offset in accordance to camera position on robot
-        LEFT(new Transform3d(new Translation3d(0.40639, 0.541, 0), new Rotation3d())),
-        RIGHT(new Transform3d(new Translation3d(0.40639, -0.541, 0), new Rotation3d())),
-        CENTER(new Transform3d(new Translation3d(0.40639, 0, 0), new Rotation3d()));
+        LEFT(0.541),
+        RIGHT(-0.541),
+        CENTER(0);
 
-        public final Transform3d offset;
+        public final double offset;
 
-        TagAlignment(Transform3d offset) {
+        TagAlignment(double offset) {
             this.offset = offset;
         }
     }
