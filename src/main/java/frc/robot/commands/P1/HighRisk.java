@@ -14,7 +14,7 @@ public class HighRisk extends SequentialCommand {
         super(isBlue);
 
         addCommands(
-                new AprilTagAlign(swerve, vision, isBlue ? 7 : 2,
+                new AprilTagAlign(swerve, vision, isBlue ? 8 : 1,
                         isBlue ? AprilTagAlign.TagAlignment.LEFT : AprilTagAlign.TagAlignment.RIGHT),
                 // score command
                 PathWeave.fromFieldCoordinates(swerve, new Pose2d(new Translation2d(5.434032, 0.913231 * yMult),
@@ -22,7 +22,7 @@ public class HighRisk extends SequentialCommand {
                 // gamepiece pick up
                 PathWeave.fromFieldCoordinates(swerve,
                         new Pose2d(new Translation2d(2.004032, 0.760531 * yMult), Rotation2d.fromDegrees(180))),
-                new AprilTagAlign(swerve, vision, isBlue ? 7 : 2, AprilTagAlign.TagAlignment.CENTER)
+                new AprilTagAlign(swerve, vision, isBlue ? 8 : 1, AprilTagAlign.TagAlignment.CENTER)
         );
     }
 }
