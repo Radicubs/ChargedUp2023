@@ -24,9 +24,9 @@ public class AprilTagAlign extends SequentialCommandGroup {
         this.offset = offset;
 
         addCommands(
-            //new AimAtTarget(base, vision, tagnum),
-            //new MoveToTarget(base, vision, tagnum, 0.5),
-            //new SpinAroundTarget(base, vision, tagnum, 0.5),
+            new AimAtTarget(base, vision, tagnum),
+            new MoveToTarget(base, vision, tagnum, 0.5),
+            new SpinAroundTarget(base, vision, tagnum, 0.5),
             new AdjustToFinalPosition(base, vision, tagnum, 0.5, offset)
         );
     }
