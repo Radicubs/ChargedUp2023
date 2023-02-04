@@ -2,12 +2,12 @@ package frc.robot.commands.P1;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
-import frc.robot.commands.P0.HighRisk;
-import frc.robot.commands.P0.LowRiskPlace;
-import frc.robot.commands.P0.LowRiskStation;
-import frc.robot.commands.P0.MidRisk;
-import frc.robot.commands.P0.NoRisk;
-import frc.robot.commands.P0.*;
+import frc.robot.commands.P1.HighRisk;
+import frc.robot.commands.P1.LowRiskPlace;
+import frc.robot.commands.P1.LowRiskStation;
+import frc.robot.commands.P1.MidRisk;
+import frc.robot.commands.P1.NoRisk;
+import frc.robot.commands.P1.*;
 import frc.robot.commands.common.AutoCommandGenerator;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
