@@ -20,7 +20,7 @@ public class HighRisk extends P2AutoCommand {
                         isBlue ? AprilTagAlign.TagAlignment.LEFT : AprilTagAlign.TagAlignment.RIGHT),
                 // score command
                 PathWeave.fromFieldCoordinates(swerve, new Pose2d(new Translation2d(5.434032, 0.913231 * yMult),
-                        Rotation2d.fromDegrees(0)), new Translation2d(2.004032, 0.760531 * yMult)),
+                        Rotation2d.fromDegrees(0)),  new Translation2d(2.004032, 0.760531 * yMult), new Translation2d(2.004032, 0.760531 * yMult)),
                 // gamepiece pick up
                 PathWeave.fromFieldCoordinates(swerve,
                         new Pose2d(new Translation2d(2.004032, 0.760531 * yMult), Rotation2d.fromDegrees(180))),

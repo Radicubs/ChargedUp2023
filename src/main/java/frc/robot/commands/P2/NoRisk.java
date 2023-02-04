@@ -9,8 +9,9 @@ import frc.robot.subsystems.Swerve;
 public class NoRisk extends P2AutoCommand {
 
     // Routine that simply leaves the community and maintains heading
-    public NoRisk(Swerve swerve) {
-        //still needs to be fixed
+    public NoRisk(Swerve swerve, boolean isBlue) {
+        //still neds to be updated
+        super(swerve, isBlue);
         addCommands(PathWeave.fromRelativeCoordinates(swerve, new Pose2d(-1, 0, new Rotation2d(180))));
     }
 
