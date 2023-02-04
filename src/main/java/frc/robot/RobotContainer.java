@@ -9,6 +9,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.commands.P0.P0CommandGenerator;
+import frc.robot.commands.P1.P1CommandGenerator;
+import frc.robot.commands.P2.P2CommandGenerator;
+import frc.robot.commands.P3.P3CommandGenerator;
 import frc.robot.commands.common.AutoCommandGenerator;
 import frc.robot.commands.teleop.TeleopSwerve;
 import frc.robot.commands.tests.TestCommandGenerator;
@@ -92,10 +95,9 @@ public class RobotContainer {
 
     private enum StartingPosition {
         P0(new P0CommandGenerator()),
-        P1(null),
-        P2(null),
-        P3(null),
-        P4(null),
+        P1(new P1CommandGenerator()),
+        P2(new P2CommandGenerator()),
+        P3(new P3CommandGenerator()),
         TESTS(new TestCommandGenerator());
 
         private final AutoCommandGenerator generator;
