@@ -9,10 +9,10 @@ import frc.robot.subsystems.Swerve;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 
-public class LowRiskStation extends SequentialCommand {
+public class LowRiskStation extends P0AutoCommand {
 
     public LowRiskStation(Swerve swerve, DoubleSupplier roll, boolean isBlue) {
-        super(isBlue);
+        super(swerve, isBlue);
         addCommands(
                 PathWeave.fromFieldCoordinates(swerve, new Pose2d(new Translation2d(4.489, 2.079 * yMult),
                         Rotation2d.fromDegrees(180)), new Translation2d(4.489, 0.909 * yMult)),

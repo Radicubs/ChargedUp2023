@@ -6,10 +6,10 @@ import frc.robot.subsystems.Swerve;
 
 import java.util.function.DoubleSupplier;
 
-public class ImpossibleRisk extends SequentialCommand {
+public class ImpossibleRisk extends P0AutoCommand {
 
     public ImpossibleRisk(Swerve swerve, PhotonVision vision, DoubleSupplier roll, boolean isBlue) {
-        super(isBlue);
+        super(swerve, isBlue);
         addCommands(
                 new HighRisk(swerve, vision, isBlue),
                 new LowRiskStation(swerve, roll, isBlue));

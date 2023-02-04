@@ -13,7 +13,7 @@ public class P0CommandGenerator implements AutoCommandGenerator {
     public Command generate(Swerve swerve, PhotonVision vision, DoubleSupplier roll, boolean isBlue, RobotContainer.AutoDifficulty difficulty) {
         switch(difficulty) {
             case NoRisk:
-                return new NoRisk(swerve);
+                return new NoRisk(swerve, isBlue);
 
             case LowRiskPlace:
                 return new LowRiskPlace(swerve, vision, isBlue);

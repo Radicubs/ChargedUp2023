@@ -44,7 +44,11 @@ public class Swerve extends SubsystemBase {
     }
 
     public void resetOdo() {
-        swerveOdometry.resetPosition(getYaw(), getModulePositions(), new Pose2d());
+        resetOdo(new Pose2d());
+    }
+
+    public void resetOdo(Pose2d position) {
+        swerveOdometry.resetPosition(getYaw(), getModulePositions(), position);
     }
 
     public void drive(Translation2d translation, double rotation, boolean isOpenLoop) {

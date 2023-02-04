@@ -8,10 +8,11 @@ import frc.robot.subsystems.Swerve;
 
 import java.util.List;
 
-public class NoRisk extends SequentialCommandGroup {
+public class NoRisk extends P0AutoCommand {
 
     // Routine that simply leaves the community and maintains heading
-    public NoRisk(Swerve swerve) {
+    public NoRisk(Swerve swerve, boolean isBlue) {
+        super(swerve, isBlue);
         addCommands(PathWeave.fromRelativeCoordinates(swerve, new Pose2d(-1, 0, new Rotation2d(180))));
     }
 

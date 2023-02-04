@@ -11,11 +11,11 @@ import frc.robot.subsystems.Swerve;
 
 import java.util.List;
 
-public class LowRiskPlace extends SequentialCommand {
+public class LowRiskPlace extends P0AutoCommand {
 
     // Routine that scores preloaded game piece, then exits the community for mobility points
     public LowRiskPlace(Swerve swerve, PhotonVision vision, boolean isBlue) {
-        super(isBlue);
+        super(swerve, isBlue);
         addCommands(new AprilTagAlign(swerve, vision, isBlue ? 8 : 1,
                 isBlue ? AprilTagAlign.TagAlignment.LEFT : AprilTagAlign.TagAlignment.RIGHT));
         // addCommands(placement command);

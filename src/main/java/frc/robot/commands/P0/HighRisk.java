@@ -9,11 +9,11 @@ import frc.robot.commands.common.SequentialCommand;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 
-public class HighRisk extends SequentialCommand {
+public class HighRisk extends P0AutoCommand {
 
     // Scores game piece, goes after cube in field center, then scores it
     public HighRisk(Swerve swerve, PhotonVision vision, boolean isBlue) {
-        super(isBlue);
+        super(swerve, isBlue);
 
         addCommands(
                 new AprilTagAlign(swerve, vision, isBlue ? 8 : 1,
