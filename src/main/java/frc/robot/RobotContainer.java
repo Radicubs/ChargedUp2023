@@ -81,6 +81,7 @@ public class RobotContainer {
 
 
     public Command getAutonomousCommand() {
+        if(startingPos.getSelected() == null) return null;
         return startingPos.getSelected().generate(swerve, camera, navx::getRoll, allianceColor.getSelected(), difficulty.getSelected());
     }
 
