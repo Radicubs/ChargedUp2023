@@ -39,6 +39,9 @@ public class MoveToTarget extends CommandBase {
         SmartDashboard.putString("Apriltag Align Phase", "Moving to target");
     }
 
+    private double posXToSpeeds(double posX){
+        return Math.min(0.75, 1.875*posX);
+    }
     @Override
     public void execute() {
         PhotonTrackedTarget target = camera.getTarget(tagnum);
@@ -58,16 +61,12 @@ public class MoveToTarget extends CommandBase {
             speeds.omegaRadiansPerSecond = (yaw > 0) ? 0.1 : -0.1;
         }
 
+
         if(Math.abs(posX - distance) < 0.05){
             done = true;
             return;
         }
-        else if(Math.abs(posX - distance) < 0.4){
-            speeds.vxMetersPerSecond = (posX > distance) ? 0.2 : -0.2;
-        }
-        else{
-            speeds.vxMetersPerSecond = (posX > distance) ? 0.75 : -0.75;
-        }
+        speeds.vxMetersPerSecond = posXToSpeeds(posX);
 
         base.driveFromChassisSpeeds(speeds);
     }
