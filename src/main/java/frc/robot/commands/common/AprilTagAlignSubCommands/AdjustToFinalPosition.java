@@ -41,6 +41,10 @@ public class AdjustToFinalPosition extends CommandBase {
         SmartDashboard.putString("Apriltag Align Phase", "Adjusting to offset");
     }
 
+    private double posYToSpeeds(double posY){
+        return Math.min(0.75, 1.875*posY);
+    }
+
     @Override
     public void execute() {
         doneX = false; doneY = false; doneRot = false;
@@ -78,12 +82,7 @@ public class AdjustToFinalPosition extends CommandBase {
         if(Math.abs(posY - offset) < 0.05){
             doneY = true;
         }
-        else if(Math.abs(posY - offset) < 0.2){
-            speeds.vyMetersPerSecond = (posY > offset) ? 0.1 : -0.1;
-        }
-        else{
-            speeds.vyMetersPerSecond = (posY > offset) ? 0.5 : -0.5;
-        }
+        speeds.vyMetersPerSecond = posYToSpeeds(posY-offset);
 
         base.driveFromChassisSpeeds(speeds);
     }

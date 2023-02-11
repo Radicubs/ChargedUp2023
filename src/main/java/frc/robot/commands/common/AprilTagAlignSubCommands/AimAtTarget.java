@@ -37,6 +37,10 @@ public class AimAtTarget extends CommandBase {
         SmartDashboard.putString("Apriltag Align Phase", "Aiming at target");
     }
 
+    private double yawToSpeeds(double yaw){
+        return Math.min(1, 0.05*yaw);
+    }
+
     @Override
     public void execute() {
         PhotonTrackedTarget target = camera.getTarget(tagnum);
@@ -50,15 +54,10 @@ public class AimAtTarget extends CommandBase {
         ChassisSpeeds speeds = new ChassisSpeeds();
         
         // must be within acceptable yaw before it starts moving fw
-        if(Math.abs(yaw) > 20){
-            speeds.omegaRadiansPerSecond = (yaw > 0) ? 1 : -1;
-            base.driveFromChassisSpeeds(speeds);
-        }
-        else if(Math.abs(yaw) > 10){
-            speeds.omegaRadiansPerSecond = (yaw > 0) ? 0.5 : 0.5;
-            base.driveFromChassisSpeeds(speeds);
-        }
-        else{
+        speeds.omegaRadiansPerSecond = yawToSpeeds(yaw);
+        base.driveFromChassisSpeeds(speeds);
+
+        if(Math.abs(yaw) < 10){
             done = true;
         }
     }

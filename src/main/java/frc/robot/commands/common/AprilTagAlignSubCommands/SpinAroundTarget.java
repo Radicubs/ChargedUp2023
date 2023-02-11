@@ -38,6 +38,10 @@ public class SpinAroundTarget extends CommandBase {
         SmartDashboard.putString("Apriltag Align Phase", "Spinning around target");
     }
 
+    private double rotZToSpeeds(double rotZ){
+        return -Math.min(0.5, rotZ*0.75);
+    }
+
     @Override
     public void execute() {
         PhotonTrackedTarget target = camera.getTarget(tagnum);
