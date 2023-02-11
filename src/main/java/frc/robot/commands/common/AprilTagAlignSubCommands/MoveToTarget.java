@@ -40,7 +40,7 @@ public class MoveToTarget extends CommandBase {
     }
 
     private double posXToSpeeds(double posX){
-        return Math.min(0.75, 1.875*posX);
+        return MathUtil.clamp(1.875*posX, 0.1, 0.75);
     }
     @Override
     public void execute() {
@@ -66,7 +66,7 @@ public class MoveToTarget extends CommandBase {
             done = true;
             return;
         }
-        speeds.vxMetersPerSecond = posXToSpeeds(posX);
+        speeds.vxMetersPerSecond = posXToSpeeds(posX-distance);
 
         base.driveFromChassisSpeeds(speeds);
     }
