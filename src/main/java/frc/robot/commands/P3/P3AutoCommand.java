@@ -8,7 +8,7 @@ import frc.robot.commands.common.SequentialCommand;
 import frc.robot.subsystems.Swerve;
 
 public abstract class P3AutoCommand extends SequentialCommand {
-    private final Pose2d startingPos = new Pose2d(new Translation2d(1.042703, 4.456881 * yMult), Rotation2d.fromDegrees(180));
+    private final Pose2d startingPos = new Pose2d(new Translation2d(1.042703, 4.621332 * yMult), Rotation2d.fromDegrees(180));
 
     // Start 26.3 inches from the tape and 31.94 inches from the BASE of the divider
     public P3AutoCommand(Swerve swerve, boolean isBlue) {
