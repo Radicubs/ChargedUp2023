@@ -39,7 +39,7 @@ public class SpinAroundTarget extends CommandBase {
     }
 
     private double rotZToSpeeds(double rotZ){
-        return -Math.min(0.5, rotZ*0.75);
+        return -MathUtil.clamp(rotZ*0.75, 0.1, 0.5);
     }
 
     @Override
@@ -60,18 +60,12 @@ public class SpinAroundTarget extends CommandBase {
             rotZ -= Math.PI;
         }        
 
+        
         if(Math.abs(rotZ) < 0.03){
             done = true;
             System.out.println(rotZ);
         }
-        else if(Math.abs(rotZ) < 0.2){
-            //slow rotation around point
-            base.rotateAroundPoint(new Translation2d(-distance - (Constants.Swerve.wheelBase / 2), 0), (rotZ > 0) ? -0.1 : 0.1);
-        }
-        else{
-            //fast rotation around point
-            base.rotateAroundPoint(new Translation2d(-distance - (Constants.Swerve.wheelBase / 2), 0), (rotZ > 0) ? -0.5 : 0.5);
-        }
+        base.rotateAroundPoint(new Translation2d(-distance - (Constants.Swerve.wheelBase / 2), 0), rotZToSpeeds(rotZ));
     }
 
     @Override

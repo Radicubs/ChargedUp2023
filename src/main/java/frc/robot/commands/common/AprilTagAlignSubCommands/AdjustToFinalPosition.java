@@ -42,7 +42,7 @@ public class AdjustToFinalPosition extends CommandBase {
     }
 
     private double posYToSpeeds(double posY){
-        return Math.min(0.75, 1.875*posY);
+        return MathUtil.clamp(1.875*posY, 0.1, 0.75);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class AdjustToFinalPosition extends CommandBase {
         rotZ += (rotZ > 0) ? -Math.PI : Math.PI;
         ChassisSpeeds speeds = new ChassisSpeeds();
         
-        if(Math.abs(rotZ) > 0.007){
+        if(Math.abs(rotZ) > 0.06){
             // Rotation correction
             speeds.omegaRadiansPerSecond = (rotZ > 0) ? -0.14 : 0.14;
         }
@@ -94,6 +94,7 @@ public class AdjustToFinalPosition extends CommandBase {
 
     @Override
     public boolean isFinished() {
+        System.out.println(doneX + " " + doneY + " " + doneRot);
         return doneX && doneY && doneRot;
     }
 }
