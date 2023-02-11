@@ -38,7 +38,7 @@ public class AimAtTarget extends CommandBase {
     }
 
     private double yawToSpeeds(double yaw){
-        return MathUtil.clamp(0.05*yaw, 0.1, 1);
+        return MathUtil.clamp(0.03*yaw, 0.1, 1);
     }
 
     @Override

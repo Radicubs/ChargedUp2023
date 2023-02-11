@@ -14,7 +14,7 @@ public class TestCommandGenerator implements AutoCommandGenerator {
     @Override
     public Command generate(Swerve swerve, PhotonVision vision, DoubleSupplier roll, boolean alliance, RobotContainer.AutoDifficulty difficulty) {
         if(difficulty == RobotContainer.AutoDifficulty.NoRisk)
-            return new AprilTagAlign(swerve, vision, 1, AprilTagAlign.TagAlignment.CENTER);
+            return new AprilTagAlign(swerve, vision, 1, AprilTagAlign.TagAlignment.LEFT);
         else{
             return new MoveCommand(swerve);
         }

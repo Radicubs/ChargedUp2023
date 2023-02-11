@@ -1,8 +1,11 @@
 package frc.robot.commands.common;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
+import frc.robot.commands.common.*;
 import frc.robot.commands.common.AprilTagAlignSubCommands.*;
 
 public class AprilTagAlign extends SequentialCommandGroup {
@@ -27,7 +30,8 @@ public class AprilTagAlign extends SequentialCommandGroup {
             new AimAtTarget(base, vision, tagnum),
             new MoveToTarget(base, vision, tagnum, 0.5),
             new SpinAroundTarget(base, vision, tagnum, 0.5),
-            new AdjustToFinalPosition(base, vision, tagnum, 0.5, offset)
+            new AdjustToFinalPosition(base, vision, tagnum, 0.5, 0),
+            PathWeave.fromRelativeCoordinates(base, new Pose2d(0, offset, new Rotation2d()))
         );
     }
 
