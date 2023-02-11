@@ -47,6 +47,7 @@ public class PathWeave extends CommandBase {
                 new PIDController(0.5, 0, 0),
                 new PIDController(0.5, 0, 0),
                 new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(6.28, 3.14)));
+        controller.setTolerance(PATH_WEAVE_TOLERANCE);
         this.trajectory = trajectory;
     }
 
@@ -66,17 +67,14 @@ public class PathWeave extends CommandBase {
         timer.reset();
         timer.start();
         swerve.driveFromChassisSpeeds(new ChassisSpeeds());
-        swerve.resetOdo();
     }
 
     @Override
     public void execute() {
         Trajectory.State state = trajectory.sample(timer.get());
         ChassisSpeeds speeds = controller.calculate(swerve.getPose(), state, Rotation2d.fromDegrees(0));
-        System.out.println("Chassis Speeds: " + speeds);
-        System.out.println("Chassis Pose: " + swerve.getPose());
         speeds.omegaRadiansPerSecond = Units.degreesToRadians(speeds.omegaRadiansPerSecond);
-        swerve.driveFromChassisSpeeds(speeds);
+        swerve.driveFromChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, swerve.getYaw()));
     }
 
     @Override
