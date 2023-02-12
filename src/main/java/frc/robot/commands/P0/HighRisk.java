@@ -16,15 +16,12 @@ public class HighRisk extends P0AutoCommand {
         super(swerve, isBlue);
 
         addCommands(
-                new AprilTagAlign(swerve, vision, isBlue ? 8 : 1,
-                        isBlue ? AprilTagAlign.TagAlignment.LEFT : AprilTagAlign.TagAlignment.RIGHT),
-                // score command
-                PathWeave.fromFieldCoordinates(swerve, new Pose2d(new Translation2d(5.434032, 0.913231 * yMult),
-                        Rotation2d.fromDegrees(0)), new Translation2d(2.004032, 0.760531 * yMult)),
+                new LowRiskPlace(swerve, vision, isBlue),
                 // gamepiece pick up
                 PathWeave.fromFieldCoordinates(swerve,
-                        new Pose2d(new Translation2d(2.004032, 0.760531 * yMult), Rotation2d.fromDegrees(180))),
+                        new Pose2d(new Translation2d(0.931, 0.998 * yMult), Rotation2d.fromDegrees(180))),
                 new AprilTagAlign(swerve, vision, isBlue ? 8 : 1, AprilTagAlign.TagAlignment.CENTER)
+                // score command
         );
     }
 }

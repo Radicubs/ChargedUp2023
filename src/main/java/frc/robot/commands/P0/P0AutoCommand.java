@@ -9,12 +9,11 @@ import frc.robot.subsystems.Swerve;
 
 public abstract class P0AutoCommand extends SequentialCommand {
 
-    // Robot should be 15.8 inches from the edge of the field, and 22.53 inches from the boundary of the community
-    //private final Pose2d startingPos = new Pose2d(new Translation2d(2.822703, 0.776101 * yMult), Rotation2d.fromDegrees(180));
+    // Robot should be 26.8 inches from the edge of the field, and 22.4 inches from the boundary of the community
+    private final Pose2d startingPos = new Pose2d(new Translation2d(2.456, 1.055 * yMult), Rotation2d.fromDegrees(180));
 
     public P0AutoCommand(Swerve swerve, boolean isBlue) {
         super(isBlue);
-        Pose2d startingPos = new Pose2d(); // TODO this is a temp start to test the stupid curving thing
         addCommands(new InstantCommand(() -> swerve.resetOdo(startingPos)));
     }
 }
