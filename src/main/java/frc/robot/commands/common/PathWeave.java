@@ -44,8 +44,8 @@ public class PathWeave extends CommandBase {
         addRequirements(swerve);
         timer = new Timer();
         controller = new HolonomicDriveController(
-                new PIDController(0.5, 0, 0),
-                new PIDController(0.5, 0, 0),
+                new PIDController(0.25, 0, 0),
+                new PIDController(0.25, 0, 0),
                 new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(6.28, 3.14)));
         controller.setTolerance(PATH_WEAVE_TOLERANCE);
         this.trajectory = trajectory;
