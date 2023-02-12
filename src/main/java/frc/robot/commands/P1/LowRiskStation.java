@@ -15,9 +15,8 @@ public class LowRiskStation extends P1AutoCommand {
     public LowRiskStation(Swerve swerve, DoubleSupplier roll, boolean isBlue) {
         super(swerve, isBlue);
         addCommands(
-                PathWeave.fromFieldCoordinates(swerve, new Pose2d(new Translation2d(4.489, 2.079 * yMult),
-                        Rotation2d.fromDegrees(180)), new Translation2d(4.489, 1.241 * yMult)),
-                new ChargeStationAlign(swerve, roll)
-        );
+                PathWeave.fromFieldCoordinates(swerve, new Pose2d(new Translation2d(4.349, 2.252 * yMult),
+                        Rotation2d.fromDegrees(180)), new Translation2d(4.349, 1.102 * yMult)),
+                new ChargeStationAlign(swerve, roll));
     }
 }
