@@ -10,9 +10,8 @@ public class NoRisk extends P3AutoCommand {
 
     // Routine that simply leaves the community and maintains heading
     public NoRisk(Swerve swerve, boolean isBlue) {
-        //TODO
         super(swerve, isBlue);
-        addCommands(PathWeave.fromRelativeCoordinates(swerve, new Pose2d(-1, 0, new Rotation2d(180))));
+        addCommands(PathWeave.fromRelativeCoordinates(swerve, new Pose2d(2.258, 0, new Rotation2d(0))));
     }
 
 }
