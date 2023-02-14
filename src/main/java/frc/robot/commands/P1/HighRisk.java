@@ -18,7 +18,7 @@ public class HighRisk extends P1AutoCommand {
                 new LowRiskPlace(swerve, vision, isBlue),
                 // gamepiece pick up
                 PathWeave.fromFieldCoordinates(swerve,
-                        new Pose2d(new Translation2d(0.931, 0.998 * yMult), Rotation2d.fromDegrees(180))),
+                        new Pose2d(new Translation2d(0.931, 0.998 * yMult), Rotation2d.fromDegrees(0))),
                 new AprilTagAlign(swerve, vision, isBlue ? 8 : 1, AprilTagAlign.TagAlignment.CENTER)
                 // score command
         );
