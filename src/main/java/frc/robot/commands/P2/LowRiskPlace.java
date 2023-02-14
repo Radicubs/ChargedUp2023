@@ -17,8 +17,9 @@ public class LowRiskPlace extends P2AutoCommand {
         addCommands(new AprilTagAlign(swerve, vision, isBlue ? 7 : 2,
                 isBlue ? AprilTagAlign.TagAlignment.LEFT : AprilTagAlign.TagAlignment.RIGHT));
         // addCommands(placement command);
-        addCommands(PathWeave.fromFieldCoordinates(swerve,
-                new Pose2d(new Translation2d(5.6896, 2.766 * yMult), new Rotation2d()), new Translation2d(5.6896, 2.766 * yMult)));
+        addCommands(PathWeave.fromRelativeCoordinates(swerve,
+                new Pose2d(new Translation2d(4.370, 0.525 * yMult), new Rotation2d()),
+                new Translation2d(0.073, 1.731 * yMult), new Translation2d(2.995, 1.743)));
     }
 
 }

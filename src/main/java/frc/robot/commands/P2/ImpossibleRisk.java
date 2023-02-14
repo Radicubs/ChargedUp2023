@@ -1,8 +1,10 @@
 package frc.robot.commands.P2;
 
-import frc.robot.commands.P2.HighRisk;
-import frc.robot.commands.P2.LowRiskStation;
-import frc.robot.commands.P2.P2AutoCommand;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import frc.robot.commands.common.ChargeStationBalance;
+import frc.robot.commands.common.PathWeave;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 
@@ -11,6 +13,10 @@ import java.util.function.DoubleSupplier;
 public class ImpossibleRisk extends P2AutoCommand {
     public ImpossibleRisk(Swerve swerve, PhotonVision vision, DoubleSupplier roll, boolean isBlue) {
         super(swerve, isBlue);
-        addCommands(new HighRisk(swerve, vision, isBlue), new LowRiskStation(swerve, roll, isBlue));
+        addCommands(
+                new HighRisk(swerve, vision, isBlue),
+                PathWeave.fromFieldCoordinates(swerve,
+                        new Pose2d(new Translation2d(4.035, 3.354), Rotation2d.fromDegrees(0))),
+                new ChargeStationBalance(swerve, roll));
     }
 }
