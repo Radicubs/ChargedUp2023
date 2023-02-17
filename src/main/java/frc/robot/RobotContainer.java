@@ -36,6 +36,7 @@ public class RobotContainer {
     private final Swerve swerve;
     private final PhotonVision camera;
     private final Navx navx;
+    private final Gripper gripper;
 
     private final SendableChooser<Boolean> allianceColor;
     private final SendableChooser<StartingPosition> startingPos;
@@ -53,6 +54,8 @@ public class RobotContainer {
                 () -> -driver.getRawAxis(XboxController.Axis.kLeftY.value),
                 () -> -driver.getRawAxis(XboxController.Axis.kLeftX.value),
                 () -> -driver.getRawAxis(XboxController.Axis.kRightX.value)));
+        gripper = new Gripper(() -> driver.getRawAxis(XboxController.Axis.kLeftTrigger.value),
+                () -> driver.getRawAxis(XboxController.Axis.kRightTrigger.value));
 
         // Configure the button bindings
         configureButtonBindings();
