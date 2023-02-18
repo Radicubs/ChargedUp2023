@@ -26,11 +26,12 @@ public class AprilTagAlign extends SequentialCommandGroup {
         this.camera = vision;
         this.offset = offset;
 
+        //Don't distance value less than 0.508 (Distance to camera from robot bumper)
         addCommands(
             new AimAtTarget(base, vision, tagnum),
-            new MoveToTarget(base, vision, tagnum, 0.5),
-            new SpinAroundTarget(base, vision, tagnum, 0.5),
-            new AdjustToFinalPosition(base, vision, tagnum, 0.5, 0),
+            new MoveToTarget(base, vision, tagnum, 1.08),
+            new SpinAroundTarget(base, vision, tagnum, 1.08),
+            new AdjustToFinalPosition(base, vision, tagnum, 1.08, 0),
             PathWeave.fromRelativeCoordinates(base, new Pose2d(0, offset, new Rotation2d()))
         );
     }
