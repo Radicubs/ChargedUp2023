@@ -22,7 +22,7 @@ public class TestCommandGenerator implements AutoCommandGenerator {
         switch(difficulty) {
             case LowRiskStation:
                 return new SequentialCommandGroup(new InstantCommand(() -> {swerve.resetOdo(new Pose2d(new Translation2d(1, 0), Rotation2d.fromDegrees(0)));}, swerve),
-                        new PathWeave(swerve, new Pose2d(new Translation2d(0.5, 0), Rotation2d.fromDegrees(0))));
+                        PathWeave.fromRelativeCoordinates(swerve, new Pose2d(new Translation2d(0.5, -0.5), Rotation2d.fromDegrees(0)), new Translation2d(0.5, 0)));
             default:
                 return null;
         }

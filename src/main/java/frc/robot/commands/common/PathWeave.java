@@ -3,10 +3,7 @@ package frc.robot.commands.common;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -14,67 +11,80 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Swerve;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PathWeave extends CommandBase {
+    private static final Pose2d TOLERANCE = new Pose2d(new Translation2d(0.05, 0.05), Rotation2d.fromDegrees(10));
 
-    public static PathWeave fromFieldCoordinates(Swerve swerve, Pose2d position, Translation2d... points) {
-        return new PathWeave(swerve, position, List.of(points));
-    }
-
-    public static PathWeave fromRelativeCoordinates(Swerve swerve, Pose2d position, Translation2d... points) {
-        return new PathWeave(swerve, List.of(points), position);
-    }
-    private static final Pose2d PATH_WEAVE_TOLERANCE = new Pose2d(0.15, 0.15, Rotation2d.fromDegrees(10));
-    private static final TrajectoryConfig config =
-            new TrajectoryConfig(Constants.Swerve.maxSpeed, 1)
-                    .setKinematics(Constants.Swerve.swerveKinematics);
-
+    private HolonomicDriveController controller;
+    private final TrajectoryConfig config;
+    private Trajectory trajectory;
     private final Swerve swerve;
-    private final HolonomicDriveController controller;
-    private final Trajectory trajectory;
     private final Timer timer;
+    private final Pose2d finalPos;
+    private final boolean isAbsolute;
+    private Translation2d[] points;
+    public static PathWeave fromFieldCoordinates(Swerve s, Pose2d pose, Translation2d... t) {
+        return new PathWeave(s, true, pose, t);
+    }
 
-    private PathWeave(Swerve swerve, Trajectory trajectory) {
+    public static PathWeave fromRelativeCoordinates(Swerve s, Pose2d pose, Translation2d... t) {
+        return new PathWeave(s, false, pose, t);
+    }
+
+
+    private PathWeave(Swerve swerve, boolean isAbsolute, Pose2d finalPos, Translation2d... points) {
+        config = new TrajectoryConfig(Constants.Swerve.maxSpeed, 1);
+        this.finalPos = finalPos;
         this.swerve = swerve;
         addRequirements(swerve);
-        timer = new Timer();
-        controller = new HolonomicDriveController(
-                new PIDController(0.25, 0, 0),
-                new PIDController(0.25, 0, 0),
-                new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(6.28, 3.14)));
-        controller.setTolerance(PATH_WEAVE_TOLERANCE);
-        this.trajectory = trajectory;
-    }
-
-    // Constructor to move robot a magnitude in relation to its current position, ex move 1 meter backwards
-    private PathWeave(Swerve swerve, List<Translation2d> points, Pose2d delta) {
-        this(swerve, TrajectoryGenerator.generateTrajectory(new Pose2d(), points, delta, config).transformBy(
-                new Transform2d(delta.getTranslation(), delta.getRotation())));
-    }
-
-    // Constructor to move robot to a specific field position, ex move to 1, 0
-    private PathWeave(Swerve swerve, Pose2d toPos, List<Translation2d> points) {
-        this(swerve, TrajectoryGenerator.generateTrajectory(swerve.getPose(), points, toPos, config));
+        this.timer = new Timer();
+        this.isAbsolute = isAbsolute;
+        this.points = points;
     }
 
     @Override
     public void initialize() {
+        Pose2d actualFinalPos;
+        List<Translation2d> finalPoints = new ArrayList<>(List.of(points));
+        if(!isAbsolute) {
+            Pose2d pose = swerve.getPose();
+            actualFinalPos = new Pose2d(new Translation2d(finalPos.getX() + pose.getX(), finalPos.getY() + pose.getY()),
+                    Rotation2d.fromDegrees(finalPos.getRotation().getDegrees() + pose.getRotation().getDegrees()));
+
+            for(int i = 0; i < finalPoints.size(); i++) {
+                Translation2d t = finalPoints.remove(i);
+                t = new Translation2d(t.getX() + pose.getX(), t.getY() + pose.getY());
+                finalPoints.add(t);
+            }
+        }
+
+        else {
+            actualFinalPos = finalPos;
+        }
+        trajectory = TrajectoryGenerator.generateTrajectory(swerve.getPose(), finalPoints, actualFinalPos, config);
+        controller = new HolonomicDriveController(
+                new PIDController(0.5, 0, 0),
+                new PIDController(0.5, 0, 0),
+                new ProfiledPIDController(0.5, 0, 0,
+                        new TrapezoidProfile.Constraints(6.18, 3.14)));
         timer.reset();
         timer.start();
-        swerve.driveFromChassisSpeeds(new ChassisSpeeds());
     }
 
     @Override
     public void execute() {
         Trajectory.State state = trajectory.sample(timer.get());
-        ChassisSpeeds speeds = controller.calculate(swerve.getPose(), state, Rotation2d.fromDegrees(0));
+        ChassisSpeeds speeds = controller.calculate(swerve.getPose(), state, new Rotation2d());
         speeds.omegaRadiansPerSecond = Units.degreesToRadians(speeds.omegaRadiansPerSecond);
-        swerve.driveFromChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, swerve.getYaw()));
+        swerve.driveFromChassisSpeeds(speeds);
     }
 
     @Override
@@ -83,8 +93,9 @@ public class PathWeave extends CommandBase {
     }
 
     @Override
-    public void end(boolean interrupted) {
-        timer.stop();
+    public void end(boolean term) {
+        SmartDashboard.putBoolean("ended", true);
         swerve.driveFromChassisSpeeds(new ChassisSpeeds());
     }
+
 }
