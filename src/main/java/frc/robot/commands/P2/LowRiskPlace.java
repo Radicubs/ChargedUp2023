@@ -14,9 +14,8 @@ public class LowRiskPlace extends P2AutoCommand {
     public LowRiskPlace(Swerve swerve, PhotonVision vision, boolean isBlue) {
         super(swerve, isBlue);
         addCommands(new AprilTagAlign(swerve, vision, isBlue ? 7 : 2,
-                isBlue ? AprilTagAlign.TagAlignment.LEFT : AprilTagAlign.TagAlignment.RIGHT));
-        // addCommands(placement command);
-        addCommands(
+                isBlue ? AprilTagAlign.TagAlignment.LEFT : AprilTagAlign.TagAlignment.RIGHT),
+                // addCommands(placement command)
                 new NoRisk(swerve, isBlue)
         );
     }
