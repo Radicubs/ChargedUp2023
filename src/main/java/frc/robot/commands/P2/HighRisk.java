@@ -15,6 +15,7 @@ public class HighRisk extends P2AutoCommand {
     // Scores game piece, goes after cube in field center, then scores it
     public HighRisk(Swerve swerve, PhotonVision vision, boolean isBlue) {
         super(swerve, isBlue);
-        addCommands(new LowRiskPlace(swerve, vision, isBlue));
+        addCommands(
+                new LowRiskPlace(swerve, vision, isBlue));
     }
 }

@@ -16,7 +16,7 @@ public class ImpossibleRisk extends P2AutoCommand {
         addCommands(
                 new HighRisk(swerve, vision, isBlue),
                 PathWeave.fromFieldCoordinates(swerve,
-                        new Pose2d(new Translation2d(4.035, 3.354), Rotation2d.fromDegrees(0))),
+                        new Pose2d(new Translation2d(4.035, 3.354 * yMult), Rotation2d.fromDegrees(0))),
                 new ChargeStationBalance(swerve, roll));
     }
 }
