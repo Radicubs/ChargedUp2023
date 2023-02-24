@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.simulation.DoubleSolenoidSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,6 +19,7 @@ public class Gripper extends SubsystemBase {
     public Gripper(DoubleSupplier leftTrigger, DoubleSupplier rightTrigger) {
         claw = new WPI_TalonFX(13);
         claw.configFactoryDefault();
+        claw.setNeutralMode(NeutralMode.Brake);
         this.leftTrigger = leftTrigger;
         this.rightTrigger = rightTrigger;
         unclamp();

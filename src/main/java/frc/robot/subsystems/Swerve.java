@@ -1,21 +1,13 @@
 package frc.robot.subsystems;
 
-import frc.robot.SwerveModule;
-import frc.robot.Constants;
-
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-
-import com.ctre.phoenix.sensors.Pigeon2;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.SwerveModule;
 
 import java.util.function.DoubleSupplier;
 
@@ -124,12 +116,10 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic() {
-        swerveOdometry.update(getYaw(), getModulePositions());
+        SmartDashboard.putNumber("odo x", swerveOdometry.getPoseMeters().getX());
+        SmartDashboard.putNumber("odo y", swerveOdometry.getPoseMeters().getY());
+        SmartDashboard.putNumber("odo z", swerveOdometry.getPoseMeters().getRotation().getDegrees());
 
-        for (SwerveModule mod : mSwerveMods) {
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated", mod.getPosition().angle.getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
-        }
+        swerveOdometry.update(getYaw(), getModulePositions());
     }
 }
