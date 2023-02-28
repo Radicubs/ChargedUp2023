@@ -36,8 +36,10 @@ public class RobotContainer {
     private final Swerve swerve;
     private final PhotonVision camera;
     private final Navx navx;
-    private final Gripper gripper;
+    private final Arm arm;
+    private final SubsystemChooser subchooser;
 
+    private final Shoulder shoulder;
     private final SendableChooser<Boolean> allianceColor;
     private final SendableChooser<StartingPosition> startingPos;
     private final SendableChooser<AutoDifficulty> difficulty;
@@ -45,6 +47,7 @@ public class RobotContainer {
 
 
     public RobotContainer() {
+        subchooser = new SubsystemChooser(driver::getPOV);
         camera = new PhotonVision();
         navx = new Navx();
         swerve = new Swerve(navx::getYaw);
@@ -54,8 +57,11 @@ public class RobotContainer {
                 () -> -driver.getRawAxis(XboxController.Axis.kLeftY.value),
                 () -> -driver.getRawAxis(XboxController.Axis.kLeftX.value),
                 () -> -driver.getRawAxis(XboxController.Axis.kRightX.value)));
-        gripper = new Gripper(() -> driver.getRawAxis(XboxController.Axis.kLeftTrigger.value),
-                () -> driver.getRawAxis(XboxController.Axis.kRightTrigger.value));
+        arm = new Arm(() -> driver.getRawAxis(XboxController.Axis.kLeftTrigger.value),
+                () -> driver.getRawAxis(XboxController.Axis.kRightTrigger.value), subchooser::getSub);
+
+        shoulder = new Shoulder(() -> driver.getRawAxis(XboxController.Axis.kLeftTrigger.value),
+                () -> driver.getRawAxis(XboxController.Axis.kRightTrigger.value), subchooser::getSub);
 
         // Configure the button bindings
         configureButtonBindings();
