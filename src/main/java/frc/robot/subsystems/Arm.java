@@ -3,50 +3,43 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.util.SubsystemChooserProvider;
+import frc.lib.util.SettableSubsystem;
+import frc.lib.util.SubsystemChooserEnum;
 
-import java.util.function.DoubleSupplier;
+public class Arm extends SettableSubsystem {
 
-public class Arm extends SubsystemBase {
-
-    private final WPI_TalonFX claw;
+    private final WPI_TalonFX arm;
     private boolean clamped;
-    private final DoubleSupplier leftTrigger;
-    private final DoubleSupplier rightTrigger;
-    private final SubsystemChooserProvider chooser;
+    private double prevPos;
+    private double setpoint;
 
-    public Arm(DoubleSupplier leftTrigger, DoubleSupplier rightTrigger, SubsystemChooserProvider chooser) {
-        this.chooser = chooser;
-        claw = new WPI_TalonFX(13);
-        claw.configFactoryDefault();
-        claw.setNeutralMode(NeutralMode.Brake);
-        this.leftTrigger = leftTrigger;
-        this.rightTrigger = rightTrigger;
-        unclamp();
+    public Arm() {
+        arm = new WPI_TalonFX(13);
+        arm.configFactoryDefault();
+        arm.setNeutralMode(NeutralMode.Brake);
+        prevPos = arm.getSelectedSensorPosition();
     }
 
-    public void clamp() {
-        clamped = true;
+    public void set(double setpoint) {
+        this.setpoint = setpoint;
     }
 
-    public void unclamp() {
-        clamped = false;
+    @Override
+    public SubsystemChooserEnum getType() {
+        return SubsystemChooserEnum.ARM;
     }
 
     @Override
     public void periodic() {
-        if(chooser.getAsChooser() == SubsystemChooser.SubsystemChooserEnum.ARM) {
-            SmartDashboard.putBoolean("Clamped", clamped);
-            double value = leftTrigger.getAsDouble() - rightTrigger.getAsDouble();
-            claw.set(ControlMode.PercentOutput, value);
+        if(setpoint == 0) {
+            if(Math.abs(prevPos - arm.getSelectedSensorPosition()) > 10) {
+                prevPos = arm.getSelectedSensorPosition();
+                arm.set(ControlMode.PercentOutput, 0.1);
+            }
         }
 
-        else {
-            claw.set(ControlMode.PercentOutput, 0);
-        }
+        else arm.set(ControlMode.PercentOutput, setpoint);
     }
 
 }

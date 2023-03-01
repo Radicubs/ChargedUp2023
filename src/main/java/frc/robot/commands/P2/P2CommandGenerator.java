@@ -1,8 +1,7 @@
 package frc.robot.commands.P2;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.RobotContainer;
-import frc.robot.commands.P2.*;
+import frc.lib.util.AutoDifficulty;
 import frc.robot.commands.common.AutoCommandGenerator;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
@@ -10,7 +9,7 @@ import frc.robot.subsystems.Swerve;
 import java.util.function.DoubleSupplier;
 
 public class P2CommandGenerator implements AutoCommandGenerator {
-    public Command generate(Swerve swerve, PhotonVision vision, DoubleSupplier roll, boolean isBlue, RobotContainer.AutoDifficulty difficulty) {
+    public Command generate(Swerve swerve, PhotonVision vision, DoubleSupplier roll, boolean isBlue, AutoDifficulty difficulty) {
         switch(difficulty) {
             case NoRisk:
                 return new NoRisk(swerve, isBlue);

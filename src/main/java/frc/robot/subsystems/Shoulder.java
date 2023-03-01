@@ -1,24 +1,23 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import com.revrobotics.SparkMaxAbsoluteEncoder;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.util.SubsystemChooserProvider;
+import frc.lib.util.SettableSubsystem;
+import frc.lib.util.SubsystemChooserEnum;
+import frc.lib.util.SubsystemChooserSupplier;
 
 import java.util.function.DoubleSupplier;
 
-public class Shoulder extends SubsystemBase {
+public class Shoulder extends SettableSubsystem {
     private final CANSparkMax shoulder;
     private final CANSparkMax shoulderRight;
-    private final DoubleSupplier left;
-    private final DoubleSupplier right;
-    private final SubsystemChooserProvider chooser;
+    private double setpoint;
+    private double prevPos;
 
-    public Shoulder(DoubleSupplier left, DoubleSupplier right, SubsystemChooserProvider chooser) {
-        this.chooser = chooser;
+    public Shoulder() {
         shoulder = new CANSparkMax(14, CANSparkMaxLowLevel.MotorType.kBrushless);
         shoulderRight = new CANSparkMax(15, CANSparkMaxLowLevel.MotorType.kBrushless);
         shoulder.restoreFactoryDefaults();
@@ -26,31 +25,35 @@ public class Shoulder extends SubsystemBase {
         shoulder.setIdleMode(CANSparkMax.IdleMode.kBrake);
         shoulderRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
         shoulder.set(0);
+        shoulder.setInverted(false);
         shoulderRight.set(0);
-        shoulderRight.setInverted(true);
-        this.left = left;
-        this.right = right;
+        shoulderRight.setInverted(false);
+        setpoint = 0;
+        prevPos = shoulder.getEncoder().getPosition();
     }
 
     @Override
     public void periodic() {
-        if(chooser.getAsChooser() == SubsystemChooser.SubsystemChooserEnum.SHOULDER) {
-            double val = left.getAsDouble() - right.getAsDouble();
-            shoulder.set(val);
-            shoulderRight.set(val / 2);
-            SmartDashboard.putNumber("shoulder", val);
-            SmartDashboard.putNumber("shoulderTemp", shoulder.getMotorTemperature());
-            SmartDashboard.putNumber("shoulderTemp2", shoulderRight.getMotorTemperature());
+        if(setpoint == 0) {
+            if(Math.abs(prevPos - ((shoulder.getEncoder().getPosition() - shoulderRight.getEncoder().getPosition()) / 2)) > 10) {
+                prevPos = (shoulder.getEncoder().getPosition() - shoulderRight.getEncoder().getPosition()) / 2;
+                shoulder.set(0.1);
+                shoulderRight.set(0.1);
+            }
         }
 
         else {
-            shoulder.set(0);
-            shoulderRight.set(0);
-            SmartDashboard.putNumber("shoulder", 0);
+            shoulder.set(setpoint);
+            shoulderRight.set(setpoint);
         }
+    }
 
-        SmartDashboard.putNumber("motor slow", shoulder.getEncoder().getVelocity());
-        SmartDashboard.putNumber("motor right", shoulderRight.getEncoder().getVelocity());
+    public void set(double setpoint) {
+        this.setpoint = setpoint;
+    }
+
+    public SubsystemChooserEnum getType() {
+        return SubsystemChooserEnum.SHOULDER;
     }
 
 

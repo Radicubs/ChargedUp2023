@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.util.SubsystemChooserEnum;
 
 import java.util.function.IntSupplier;
 
@@ -41,8 +42,5 @@ public class SubsystemChooser extends SubsystemBase {
         }
     }
 
-    public enum SubsystemChooserEnum {
-        SHOULDER, ARM, GRIPPER
-    }
 }
 

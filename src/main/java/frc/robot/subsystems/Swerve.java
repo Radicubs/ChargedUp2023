@@ -119,6 +119,7 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("odo x", swerveOdometry.getPoseMeters().getX());
         SmartDashboard.putNumber("odo y", swerveOdometry.getPoseMeters().getY());
         SmartDashboard.putNumber("odo z", swerveOdometry.getPoseMeters().getRotation().getDegrees());
+        SmartDashboard.putBoolean("Field oriented", fieldOriented);
 
         swerveOdometry.update(getYaw(), getModulePositions());
     }

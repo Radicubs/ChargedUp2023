@@ -5,16 +5,12 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
-import frc.robot.commands.P0.P0CommandGenerator;
-import frc.robot.commands.P1.P1CommandGenerator;
-import frc.robot.commands.P2.P2CommandGenerator;
-import frc.robot.commands.P3.P3CommandGenerator;
-import frc.robot.commands.common.AutoCommandGenerator;
+import frc.lib.util.AutoDifficulty;
+import frc.lib.util.StartingPosition;
+import frc.robot.commands.teleop.SubsystemControlCommand;
 import frc.robot.commands.teleop.TeleopSwerve;
-import frc.robot.commands.tests.TestCommandGenerator;
 import frc.robot.subsystems.*;
 
 import java.util.function.DoubleSupplier;
@@ -28,23 +24,21 @@ import java.util.function.DoubleSupplier;
 public class RobotContainer {
     private final Joystick driver = new Joystick(0);
 
-    private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
-    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-    private final JoystickButton goForward = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
-    private final JoystickButton move = new JoystickButton(driver, XboxController.Button.kA.value);
-
+    // Subsystems
     private final Swerve swerve;
+
     private final PhotonVision camera;
     private final Navx navx;
-    private final Arm arm;
     private final SubsystemChooser subchooser;
 
     private final Shoulder shoulder;
+    private final Arm arm;
+    private final Gripper gripper;
+
+    // Sendables
     private final SendableChooser<Boolean> allianceColor;
     private final SendableChooser<StartingPosition> startingPos;
     private final SendableChooser<AutoDifficulty> difficulty;
-
-
 
     public RobotContainer() {
         subchooser = new SubsystemChooser(driver::getPOV);
@@ -57,14 +51,18 @@ public class RobotContainer {
                 () -> -driver.getRawAxis(XboxController.Axis.kLeftY.value),
                 () -> -driver.getRawAxis(XboxController.Axis.kLeftX.value),
                 () -> -driver.getRawAxis(XboxController.Axis.kRightX.value)));
-        arm = new Arm(() -> driver.getRawAxis(XboxController.Axis.kLeftTrigger.value),
-                () -> driver.getRawAxis(XboxController.Axis.kRightTrigger.value), subchooser::getSub);
 
-        shoulder = new Shoulder(() -> driver.getRawAxis(XboxController.Axis.kLeftTrigger.value),
-                () -> driver.getRawAxis(XboxController.Axis.kRightTrigger.value), subchooser::getSub);
+        DoubleSupplier left = () -> driver.getRawAxis(XboxController.Axis.kLeftTrigger.value);
+        DoubleSupplier right = () -> driver.getRawAxis(XboxController.Axis.kRightTrigger.value);
 
-        // Configure the button bindings
-        configureButtonBindings();
+        shoulder = new Shoulder();
+        shoulder.setDefaultCommand(new SubsystemControlCommand(shoulder, left, right, subchooser::getSub));
+
+        arm = new Arm();
+        arm.setDefaultCommand(new SubsystemControlCommand(shoulder, left, right, subchooser::getSub));
+
+        gripper = new Gripper();
+        gripper.setDefaultCommand(new SubsystemControlCommand(gripper, left, right, subchooser::getSub));
 
         allianceColor = new SendableChooser<>();
         allianceColor.setDefaultOption("Blue", true);
@@ -82,42 +80,9 @@ public class RobotContainer {
         SmartDashboard.updateValues();
     }
 
-    private void configureButtonBindings() {
-        robotCentric.toggleOnTrue(new InstantCommand(swerve::toggleFieldOriented));
-
-    }
-
-
-
     public Command getAutonomousCommand() {
         if(startingPos.getSelected() == null) return null;
         return startingPos.getSelected().generate(swerve, camera, navx::getRoll, allianceColor.getSelected(), difficulty.getSelected());
     }
 
-    public enum AutoDifficulty {
-        NoRisk,
-        LowRiskPlace,
-        LowRiskStation,
-        MidRisk,
-        HighRisk,
-        Impossible
-    }
-
-    private enum StartingPosition {
-        P0(new P0CommandGenerator()),
-        P1(new P1CommandGenerator()),
-        P2(new P2CommandGenerator()),
-        P3(new P3CommandGenerator()),
-        TESTS(new TestCommandGenerator());
-
-        private final AutoCommandGenerator generator;
-
-        public Command generate(Swerve swerve, PhotonVision vision, DoubleSupplier roll, boolean alliance, RobotContainer.AutoDifficulty difficulty) {
-            return generator.generate(swerve, vision, roll, alliance, difficulty);
-        }
-
-        StartingPosition(AutoCommandGenerator generator) {
-            this.generator = generator;
-        }
-    }
 }
