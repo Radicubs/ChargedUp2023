@@ -16,6 +16,7 @@ public class Shoulder extends SettableSubsystem {
     private final CANSparkMax shoulderRight;
     private double setpoint;
     private double prevPos;
+    private double offset = 0;
 
     public Shoulder() {
         shoulder = new CANSparkMax(14, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -46,6 +47,13 @@ public class Shoulder extends SettableSubsystem {
             shoulder.set(setpoint);
             shoulderRight.set(setpoint);
         }
+    }
+
+    public void setOffset(double offset){
+        this.offset = offset;
+    }
+    public double getAngle(){
+        return shoulderRight.getEncoder().getPosition() - offset;
     }
 
     public void set(double setpoint) {
