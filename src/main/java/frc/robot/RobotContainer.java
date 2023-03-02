@@ -5,28 +5,33 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
-import frc.lib.util.AutoDifficulty;
-import frc.lib.util.StartingPosition;
+import frc.lib.util.auto.AutoDifficulty;
+import frc.lib.util.auto.StartingPosition;
+import frc.robot.commands.common.AprilTagAlign;
 import frc.robot.commands.teleop.SubsystemControlCommand;
 import frc.robot.commands.teleop.TeleopSwerve;
 import frc.robot.subsystems.*;
 
 import java.util.function.DoubleSupplier;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and button mappings) should be declared here.
- */
 public class RobotContainer {
+
+    // Joysticks
     private final Joystick driver = new Joystick(0);
+    private final Joystick buttonBoard = new Joystick(1);
+
+    // Buttons
+    private final JoystickButton leftAlign;
+    private final JoystickButton centerAlign;
+    private final JoystickButton rightAlign;
+    private final JoystickButton slowmode;
+    private final JoystickButton fieldOriented;
 
     // Subsystems
     private final Swerve swerve;
-
     private final PhotonVision camera;
     private final Navx navx;
     private final SubsystemChooser subchooser;
@@ -59,7 +64,7 @@ public class RobotContainer {
         shoulder.setDefaultCommand(new SubsystemControlCommand(shoulder, left, right, subchooser::getSub));
 
         arm = new Arm();
-        arm.setDefaultCommand(new SubsystemControlCommand(shoulder, left, right, subchooser::getSub));
+        arm.setDefaultCommand(new SubsystemControlCommand(arm, left, right, subchooser::getSub));
 
         gripper = new Gripper();
         gripper.setDefaultCommand(new SubsystemControlCommand(gripper, left, right, subchooser::getSub));
@@ -78,6 +83,22 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Difficulty", difficulty);
 
         SmartDashboard.updateValues();
+
+        leftAlign = new JoystickButton(buttonBoard, 1);
+        centerAlign = new JoystickButton(buttonBoard, 2);
+        rightAlign = new JoystickButton(buttonBoard, 3);
+        slowmode = new JoystickButton(buttonBoard, 4);
+        fieldOriented = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+
+        configureButtonBindings();
+    }
+
+    private void configureButtonBindings() {
+        leftAlign.whileTrue(new AprilTagAlign(swerve, camera, camera.findNearestTag(), AprilTagAlign.TagAlignment.LEFT));
+        centerAlign.whileTrue(new AprilTagAlign(swerve, camera, camera.findNearestTag(), AprilTagAlign.TagAlignment.CENTER));
+        rightAlign.whileTrue(new AprilTagAlign(swerve, camera, camera.findNearestTag(), AprilTagAlign.TagAlignment.RIGHT));
+        slowmode.onTrue(new InstantCommand(swerve::toggleSlowmode, swerve));
+        fieldOriented.onTrue(new InstantCommand(swerve::toggleFieldOriented, swerve));
     }
 
     public Command getAutonomousCommand() {

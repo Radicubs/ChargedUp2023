@@ -1,11 +1,9 @@
 package frc.robot.commands.teleop;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.lib.util.SettableSubsystem;
-import frc.lib.util.SubsystemChooserEnum;
-import frc.lib.util.SubsystemChooserSupplier;
+import frc.lib.util.subchooser.SettableSubsystem;
+import frc.lib.util.subchooser.SubsystemChooserSupplier;
 
-import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
 public class SubsystemControlCommand extends CommandBase {
@@ -27,8 +25,13 @@ public class SubsystemControlCommand extends CommandBase {
     @Override
     public void execute() {
         if(sub.getAsChooser() == subsystem.getType())
-            subsystem.set(left.getAsDouble() - right.getAsDouble());
+            subsystem.set(deadband(left.getAsDouble() - right.getAsDouble()));
 
         else subsystem.set(0);
+    }
+
+    private static double deadband(double value) {
+        if(Math.abs(value) < 0.01) return 0;
+        return value;
     }
 }

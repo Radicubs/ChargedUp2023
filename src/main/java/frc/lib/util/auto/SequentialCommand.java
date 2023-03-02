@@ -1,4 +1,4 @@
-package frc.robot.commands.common;
+package frc.lib.util.auto;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.PhotonVision;

@@ -2,8 +2,9 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import frc.lib.util.SettableSubsystem;
-import frc.lib.util.SubsystemChooserEnum;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.lib.util.subchooser.SettableSubsystem;
+import frc.lib.util.subchooser.SubsystemChooserEnum;
 
 public class Gripper extends SettableSubsystem {
 
@@ -31,13 +32,16 @@ public class Gripper extends SettableSubsystem {
 
     @Override
     public void periodic() {
-        if(setpoint == 0) {
-            if(Math.abs(prevPos - gripper.getEncoder().getPosition()) > 10) {
-                prevPos = gripper.getEncoder().getPosition();
-                gripper.set(setpoint);
-            }
-        }
-
-        else gripper.set(0.1);
+        gripper.set(setpoint / 5);
+        SmartDashboard.putNumber("Gripper Temp", gripper.getMotorTemperature());
+//        SmartDashboard.putNumber("gripper val", setpoint);
+//        if(setpoint == 0) {
+//            if(Math.abs(prevPos - gripper.getEncoder().getPosition()) > 10) {
+//                prevPos = gripper.getEncoder().getPosition();
+//                gripper.set(setpoint);
+//            }
+//        }
+//
+//        else gripper.set(0.1);
     }
 }

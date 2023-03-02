@@ -1,35 +1,32 @@
 package frc.robot.commands.common.armdeploy;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.LimitSwitches;
+import frc.robot.subsystems.Shoulder;
 
-public class ArmUp extends CommandBase {
+public class ShoulderBack extends CommandBase {
 
-    private final Arm arm;
     private final LimitSwitches switches;
+    private final Shoulder shoulder;
 
-    public ArmUp(LimitSwitches switches, Arm arm) {
-        this.arm = arm;
+    public ShoulderBack(LimitSwitches switches, Shoulder shoulder) {
+        this.shoulder = shoulder;
         this.switches = switches;
-        addRequirements(arm);
+        addRequirements(shoulder);
     }
 
     @Override
     public void initialize() {
-        arm.set(-0.25);
+        shoulder.set(-0.25);
     }
 
     @Override
     public boolean isFinished() {
-        return switches.armExtensionButton();
+        return switches.shoulderButton();
     }
 
     @Override
     public void end(boolean interrupted) {
-        arm.set(0);
+        shoulder.set(0);
     }
-
-
-
 }

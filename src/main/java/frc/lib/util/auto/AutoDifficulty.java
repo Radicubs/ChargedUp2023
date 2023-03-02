@@ -1,4 +1,4 @@
-package frc.lib.util;
+package frc.lib.util.auto;
 
 public enum AutoDifficulty {
     NoRisk,

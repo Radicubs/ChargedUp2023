@@ -1,8 +1,8 @@
 package frc.robot.commands.P0;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.lib.util.AutoDifficulty;
-import frc.robot.commands.common.AutoCommandGenerator;
+import frc.lib.util.auto.AutoDifficulty;
+import frc.lib.util.auto.AutoCommandGenerator;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 

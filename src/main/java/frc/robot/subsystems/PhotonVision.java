@@ -1,10 +1,18 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PhotonVision extends SubsystemBase {
     //the string is the name of the NetworkTable that PhotonVision is broadcasting info over
@@ -27,5 +35,11 @@ public class PhotonVision extends SubsystemBase {
             }
         }
         return null;
+    }
+
+    public int findNearestTag() {
+        PhotonPipelineResult result = camera.getLatestResult();
+        if(result.hasTargets()) return result.getBestTarget().getFiducialId();
+        return -1;
     }
 }

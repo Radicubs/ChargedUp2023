@@ -7,7 +7,7 @@ import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.SwerveModule;
+import frc.lib.util.swerve.SwerveModule;
 
 import java.util.function.DoubleSupplier;
 
@@ -15,11 +15,13 @@ public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
     private boolean fieldOriented;
+    private boolean slowmode;
     private final DoubleSupplier rotationSupplier;
 
     public Swerve(DoubleSupplier rotationSupplier) {
         this.rotationSupplier = rotationSupplier;
         fieldOriented = false;
+        slowmode = false;
 
         mSwerveMods = new SwerveModule[] {
                 new SwerveModule(0, Constants.Swerve.Mod0.constants),
@@ -29,6 +31,10 @@ public class Swerve extends SubsystemBase {
         };
 
         swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getYaw(), getModulePositions());
+    }
+
+    public void toggleSlowmode() {
+        slowmode = !slowmode;
     }
 
     public void toggleFieldOriented() {
@@ -44,6 +50,10 @@ public class Swerve extends SubsystemBase {
     }
 
     public void drive(Translation2d translation, double rotation, boolean isOpenLoop) {
+        if(slowmode) {
+            rotation /= 6;
+            translation = new Translation2d(translation.getX() / 6, translation.getY() / 6);
+        }
         SwerveModuleState[] swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(
                 fieldOriented ? ChassisSpeeds.fromFieldRelativeSpeeds(
                         translation.getX(),
@@ -116,10 +126,8 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("odo x", swerveOdometry.getPoseMeters().getX());
-        SmartDashboard.putNumber("odo y", swerveOdometry.getPoseMeters().getY());
-        SmartDashboard.putNumber("odo z", swerveOdometry.getPoseMeters().getRotation().getDegrees());
         SmartDashboard.putBoolean("Field oriented", fieldOriented);
+        SmartDashboard.putBoolean("slowmode", slowmode);
 
         swerveOdometry.update(getYaw(), getModulePositions());
     }

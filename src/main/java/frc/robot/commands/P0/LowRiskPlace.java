@@ -5,11 +5,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.commands.common.AprilTagAlign;
 import frc.robot.commands.common.PathWeave;
-import frc.robot.commands.common.SequentialCommand;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
-
-import java.util.List;
 
 public class LowRiskPlace extends P0AutoCommand {
 

@@ -1,7 +1,6 @@
-package frc.robot.commands.common;
+package frc.lib.util.auto;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.lib.util.AutoDifficulty;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
 

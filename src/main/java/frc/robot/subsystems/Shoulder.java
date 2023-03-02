@@ -1,15 +1,10 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.util.SettableSubsystem;
-import frc.lib.util.SubsystemChooserEnum;
-import frc.lib.util.SubsystemChooserSupplier;
-
-import java.util.function.DoubleSupplier;
+import frc.lib.util.subchooser.SettableSubsystem;
+import frc.lib.util.subchooser.SubsystemChooserEnum;
 
 public class Shoulder extends SettableSubsystem {
     private final CANSparkMax shoulder;
@@ -27,25 +22,47 @@ public class Shoulder extends SettableSubsystem {
         shoulder.set(0);
         shoulder.setInverted(false);
         shoulderRight.set(0);
-        shoulderRight.setInverted(false);
+        shoulderRight.setInverted(true);
         setpoint = 0;
         prevPos = shoulder.getEncoder().getPosition();
     }
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("ShoulderL Temp", shoulder.getMotorTemperature());
+        SmartDashboard.putNumber("ShoulderR Temp", shoulderRight.getMotorTemperature());
         if(setpoint == 0) {
-            if(Math.abs(prevPos - ((shoulder.getEncoder().getPosition() - shoulderRight.getEncoder().getPosition()) / 2)) > 10) {
-                prevPos = (shoulder.getEncoder().getPosition() - shoulderRight.getEncoder().getPosition()) / 2;
-                shoulder.set(0.1);
-                shoulderRight.set(0.1);
-            }
+            System.out.println("zeroed");
+//            if(Math.abs(prevPos - ((shoulder.getEncoder().getPosition() + shoulderRight.getEncoder().getPosition()) / 2)) > .15) {
+                System.out.println("moving");
+
+                prevPos = (shoulder.getEncoder().getPosition() + shoulderRight.getEncoder().getPosition()) / 2;
+//                shoulder.set(-0.05);
+//                shoulderRight.set(-0.05);
+//            }
+
+//            else {
+//                shoulder.set(0);
+//                shoulderRight.set(0);
+//            }
         }
 
         else {
-            shoulder.set(setpoint);
-            shoulderRight.set(setpoint);
+            shoulder.set(setpoint / 4);
+            shoulderRight.set(setpoint / 4);
         }
+//        if(setpoint == 0) {
+//            if(Math.abs(prevPos - ((shoulder.getEncoder().getPosition() - shoulderRight.getEncoder().getPosition()) / 2)) > 10) {
+//                prevPos = (shoulder.getEncoder().getPosition() - shoulderRight.getEncoder().getPosition()) / 2;
+//                shoulder.set(0.1);
+//                shoulderRight.set(0.1);
+//            }
+//        }
+//
+//        else {
+//            shoulder.set(setpoint);
+//            shoulderRight.set(setpoint);
+//        }
     }
 
     public void set(double setpoint) {

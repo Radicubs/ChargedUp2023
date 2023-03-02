@@ -1,4 +1,4 @@
-package frc.lib.util;
+package frc.lib.util.subchooser;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
