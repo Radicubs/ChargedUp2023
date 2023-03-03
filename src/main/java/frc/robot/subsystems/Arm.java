@@ -11,6 +11,7 @@ public class Arm extends SettableSubsystem {
 
     private final WPI_TalonFX arm;
     private boolean clamped;
+    private double offset = 0;
     private double prevPos;
     private double setpoint;
 
@@ -23,6 +24,14 @@ public class Arm extends SettableSubsystem {
 
     public void set(double setpoint) {
         this.setpoint = setpoint;
+    }
+
+    public void setOffset(double offset){
+        this.offset = offset;
+    }
+
+    public double getLength(){
+        return arm.getSelectedSensorPosition() - offset;
     }
 
     @Override
