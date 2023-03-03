@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PathWeave extends CommandBase {
-    private static final Pose2d TOLERANCE = new Pose2d(new Translation2d(0.05, 0.05), Rotation2d.fromDegrees(10));
+    private static final Pose2d TOLERANCE = new Pose2d(new Translation2d(0.03, 0.03), Rotation2d.fromDegrees(5));
 
     private HolonomicDriveController controller;
     private final TrajectoryConfig config;
@@ -69,12 +69,16 @@ public class PathWeave extends CommandBase {
         else {
             actualFinalPos = finalPos;
         }
+
+        System.out.println(finalPos);
+        System.out.println(actualFinalPos);
         trajectory = TrajectoryGenerator.generateTrajectory(swerve.getPose(), finalPoints, actualFinalPos, config);
         controller = new HolonomicDriveController(
-                new PIDController(0.5, 0, 0),
-                new PIDController(0.5, 0, 0),
-                new ProfiledPIDController(0.5, 0, 0,
+                new PIDController(0.5, 0, 0.001),
+                new PIDController(0.5, 0, 0.001),
+                new ProfiledPIDController(0.6, 0, 0,
                         new TrapezoidProfile.Constraints(6.18, 3.14)));
+        controller.setTolerance(TOLERANCE);
         timer.reset();
         timer.start();
     }

@@ -1,10 +1,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -29,12 +31,14 @@ public class RobotContainer {
     private final JoystickButton rightAlign;
     private final JoystickButton slowmode;
     private final JoystickButton fieldOriented;
+    private final JoystickButton resetGyro;
 
     // Subsystems
     private final Swerve swerve;
     private final PhotonVision camera;
     private final Navx navx;
     private final SubsystemChooser subchooser;
+    private final PowerDistribution pdp;
 
     private final Shoulder shoulder;
     private final Arm arm;
@@ -45,7 +49,11 @@ public class RobotContainer {
     private final SendableChooser<StartingPosition> startingPos;
     private final SendableChooser<AutoDifficulty> difficulty;
 
+    private AprilTagAlign currentApril;
+
     public RobotContainer() {
+        pdp = new PowerDistribution(0, PowerDistribution.ModuleType.kCTRE);
+        pdp.clearStickyFaults();
         subchooser = new SubsystemChooser(driver::getPOV);
         camera = new PhotonVision();
         navx = new Navx();
@@ -89,21 +97,45 @@ public class RobotContainer {
         rightAlign = new JoystickButton(buttonBoard, 3);
         slowmode = new JoystickButton(buttonBoard, 4);
         fieldOriented = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+        resetGyro = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
 
+        currentApril = null;
         configureButtonBindings();
     }
 
     private void configureButtonBindings() {
-        leftAlign.whileTrue(new AprilTagAlign(swerve, camera, camera.findNearestTag(), AprilTagAlign.TagAlignment.LEFT));
-        centerAlign.whileTrue(new AprilTagAlign(swerve, camera, camera.findNearestTag(), AprilTagAlign.TagAlignment.CENTER));
-        rightAlign.whileTrue(new AprilTagAlign(swerve, camera, camera.findNearestTag(), AprilTagAlign.TagAlignment.RIGHT));
+        leftAlign.onTrue(new InstantCommand(() -> {
+            CommandScheduler.getInstance().cancel(currentApril);
+            currentApril = new AprilTagAlign(swerve, camera, camera.findNearestTag(), AprilTagAlign.TagAlignment.LEFT);
+            CommandScheduler.getInstance().schedule(currentApril);
+        }));
+
+        leftAlign.onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(currentApril)));
+
+        centerAlign.onTrue(new InstantCommand(() -> {
+            CommandScheduler.getInstance().cancel(currentApril);
+            currentApril = new AprilTagAlign(swerve, camera, 1, AprilTagAlign.TagAlignment.CENTER);
+            CommandScheduler.getInstance().schedule(currentApril);
+        }));
+
+        centerAlign.onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(currentApril)));
+
+        rightAlign.whileTrue(new InstantCommand(() -> {
+            CommandScheduler.getInstance().cancel(currentApril);
+            currentApril = new AprilTagAlign(swerve, camera, camera.findNearestTag(), AprilTagAlign.TagAlignment.RIGHT);
+            CommandScheduler.getInstance().schedule(currentApril);
+        }));
+
+        rightAlign.onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(currentApril)));
+
         slowmode.onTrue(new InstantCommand(swerve::toggleSlowmode, swerve));
         fieldOriented.onTrue(new InstantCommand(swerve::toggleFieldOriented, swerve));
+        resetGyro.onTrue(new InstantCommand(navx::reset, navx));
     }
 
     public Command getAutonomousCommand() {
         if(startingPos.getSelected() == null) return null;
-        return startingPos.getSelected().generate(swerve, camera, navx::getRoll, allianceColor.getSelected(), difficulty.getSelected());
+        return startingPos.getSelected().generate(swerve, camera, navx::getPitch, allianceColor.getSelected(), difficulty.getSelected());
     }
 
 }

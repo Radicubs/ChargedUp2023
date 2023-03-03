@@ -35,7 +35,7 @@ public class ChargeStationAlign extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        swerve.setModuleStates(new SwerveModuleState[] {lockedState, lockedState, lockedState, lockedState});
+
     }
 
 }

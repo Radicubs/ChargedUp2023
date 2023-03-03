@@ -2,6 +2,7 @@ package frc.robot.commands.common;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Swerve;
@@ -11,6 +12,7 @@ import frc.robot.commands.common.AprilTagAlignSubCommands.*;
 public class AprilTagAlign extends SequentialCommandGroup {
 
     private final int tagnum;
+    private static int instance = 0;
     private final Swerve base;
     private final PhotonVision camera;
     private boolean done = false;
@@ -21,6 +23,8 @@ public class AprilTagAlign extends SequentialCommandGroup {
     }
 
     public AprilTagAlign(Swerve base, PhotonVision vision, int tagnum, double offset) {
+        instance++;
+        SmartDashboard.putNumber("instance", instance);
         this.tagnum = tagnum;
         this.base = base;
         this.camera = vision;

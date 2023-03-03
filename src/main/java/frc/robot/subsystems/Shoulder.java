@@ -31,14 +31,12 @@ public class Shoulder extends SettableSubsystem {
     public void periodic() {
         SmartDashboard.putNumber("ShoulderL Temp", shoulder.getMotorTemperature());
         SmartDashboard.putNumber("ShoulderR Temp", shoulderRight.getMotorTemperature());
+
         if(setpoint == 0) {
-            System.out.println("zeroed");
-//            if(Math.abs(prevPos - ((shoulder.getEncoder().getPosition() + shoulderRight.getEncoder().getPosition()) / 2)) > .15) {
-                System.out.println("moving");
 
                 prevPos = (shoulder.getEncoder().getPosition() + shoulderRight.getEncoder().getPosition()) / 2;
-//                shoulder.set(-0.05);
-//                shoulderRight.set(-0.05);
+                shoulder.set(-0.09);
+                shoulderRight.set(-0.09);
 //            }
 
 //            else {

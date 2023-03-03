@@ -35,6 +35,7 @@ public class Swerve extends SubsystemBase {
 
     public void toggleSlowmode() {
         slowmode = !slowmode;
+        Constants.Swerve.maxSpeed = slowmode ? 15.0 / 4 : 15;
     }
 
     public void toggleFieldOriented() {
@@ -50,10 +51,6 @@ public class Swerve extends SubsystemBase {
     }
 
     public void drive(Translation2d translation, double rotation, boolean isOpenLoop) {
-        if(slowmode) {
-            rotation /= 6;
-            translation = new Translation2d(translation.getX() / 6, translation.getY() / 6);
-        }
         SwerveModuleState[] swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(
                 fieldOriented ? ChassisSpeeds.fromFieldRelativeSpeeds(
                         translation.getX(),
@@ -91,11 +88,11 @@ public class Swerve extends SubsystemBase {
     }
 
     /* Used by SwerveControllerCommand in Auto */
-    public void setModuleStates(SwerveModuleState[] desiredStates) {
+    public void setModuleAngles(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
 
         for (SwerveModule mod : mSwerveMods) {
-            mod.setDesiredState(desiredStates[mod.moduleNumber], false);
+            mod.setAngle(desiredStates[mod.moduleNumber]);
         }
     }
 

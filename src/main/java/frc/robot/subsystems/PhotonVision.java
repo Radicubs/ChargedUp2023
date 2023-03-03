@@ -42,4 +42,10 @@ public class PhotonVision extends SubsystemBase {
         if(result.hasTargets()) return result.getBestTarget().getFiducialId();
         return -1;
     }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("at", findNearestTag());
+
+    }
 }
