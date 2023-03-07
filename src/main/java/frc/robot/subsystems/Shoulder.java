@@ -36,8 +36,8 @@ public class Shoulder extends SettableSubsystem {
         if(setpoint == 0) {
 
                 prevPos = (shoulder.getEncoder().getPosition() + shoulderRight.getEncoder().getPosition()) / 2;
-                shoulder.set(-0.09);
-                shoulderRight.set(-0.09);
+                shoulder.set(-0.045);
+                shoulderRight.set(-0.045);
 //            }
 
 //            else {

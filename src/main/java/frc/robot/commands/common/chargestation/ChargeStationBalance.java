@@ -19,7 +19,7 @@ public class ChargeStationBalance extends SequentialCommandGroup {
         addCommands(
                 new ForwardUntilTilt(swerve, roll),
                 new ChargeStationAlign(swerve, roll),
-                PathWeave.fromRelativeCoordinates(swerve, new Pose2d(new Translation2d(-0.23, 0), Rotation2d.fromDegrees(45)))
+                PathWeave.fromRelativeCoordinates(swerve, new Pose2d(new Translation2d(-0.45, 0), Rotation2d.fromDegrees(45)))
         );
     }
 

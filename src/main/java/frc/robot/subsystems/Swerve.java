@@ -126,6 +126,8 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putBoolean("Field oriented", fieldOriented);
         SmartDashboard.putBoolean("slowmode", slowmode);
 
+        SmartDashboard.putNumber("swerbe", mSwerveMods[3].getCanCoder().getDegrees());
+
         swerveOdometry.update(getYaw(), getModulePositions());
     }
 }

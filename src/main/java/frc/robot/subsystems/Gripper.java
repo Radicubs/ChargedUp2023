@@ -43,6 +43,7 @@ public class Gripper extends SettableSubsystem {
     public void periodic() {
         gripper.set(setpoint / 5);
         SmartDashboard.putNumber("Gripper Temp", gripper.getMotorTemperature());
+        SmartDashboard.putNumber("gripp", setpoint);
 //        SmartDashboard.putNumber("gripper val", setpoint);
 //        if(setpoint == 0) {
 //            if(Math.abs(prevPos - gripper.getEncoder().getPosition()) > 10) {

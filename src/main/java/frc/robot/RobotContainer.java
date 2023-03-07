@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -29,6 +30,7 @@ public class RobotContainer {
     private final JoystickButton leftAlign;
     private final JoystickButton centerAlign;
     private final JoystickButton rightAlign;
+    private final JoystickButton gripp;
     private final JoystickButton slowmode;
     private final JoystickButton fieldOriented;
     private final JoystickButton resetGyro;
@@ -38,7 +40,7 @@ public class RobotContainer {
     private final PhotonVision camera;
     private final Navx navx;
     private final SubsystemChooser subchooser;
-    private final PowerDistribution pdp;
+//    private final PowerDistribution pdp;
 
     private final Shoulder shoulder;
     private final Arm arm;
@@ -52,8 +54,8 @@ public class RobotContainer {
     private AprilTagAlign currentApril;
 
     public RobotContainer() {
-        pdp = new PowerDistribution(0, PowerDistribution.ModuleType.kCTRE);
-        pdp.clearStickyFaults();
+//        pdp = new PowerDistribution(0, PowerDistribution.ModuleType.kCTRE);
+//        pdp.clearStickyFaults();
         subchooser = new SubsystemChooser(driver::getPOV);
         camera = new PhotonVision();
         navx = new Navx();
@@ -98,6 +100,7 @@ public class RobotContainer {
         slowmode = new JoystickButton(buttonBoard, 4);
         fieldOriented = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
         resetGyro = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+        gripp = new JoystickButton(buttonBoard, 5);
 
         currentApril = null;
         configureButtonBindings();
@@ -128,6 +131,13 @@ public class RobotContainer {
 
         rightAlign.onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(currentApril)));
 
+        gripp.whileTrue(new CommandBase() {
+            @Override
+            public void execute() {
+                gripper.set(-0.4);
+            }
+        });
+
         slowmode.onTrue(new InstantCommand(swerve::toggleSlowmode, swerve));
         fieldOriented.onTrue(new InstantCommand(swerve::toggleFieldOriented, swerve));
         resetGyro.onTrue(new InstantCommand(navx::reset, navx));
@@ -135,7 +145,7 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         if(startingPos.getSelected() == null) return null;
-        return startingPos.getSelected().generate(swerve, camera, navx::getPitch, allianceColor.getSelected(), difficulty.getSelected());
+        return startingPos.getSelected().generate(swerve, arm, shoulder, camera, navx::getPitch, allianceColor.getSelected(), difficulty.getSelected());
     }
 
 }
