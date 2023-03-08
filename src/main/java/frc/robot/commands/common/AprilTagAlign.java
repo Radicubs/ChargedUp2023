@@ -24,7 +24,6 @@ public class AprilTagAlign extends SequentialCommandGroup {
 
     public AprilTagAlign(Swerve base, PhotonVision vision, int tagnum, double offset) {
         instance++;
-        SmartDashboard.putNumber("instance", instance);
         this.tagnum = tagnum;
         this.base = base;
         this.camera = vision;

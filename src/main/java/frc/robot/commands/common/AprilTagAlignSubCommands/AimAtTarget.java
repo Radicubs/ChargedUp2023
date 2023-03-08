@@ -34,7 +34,6 @@ public class AimAtTarget extends CommandBase {
     @Override
     public void initialize() {
         base.driveFromChassisSpeeds(new ChassisSpeeds());
-        SmartDashboard.putString("Apriltag Align Phase", "Aiming at target");
     }
 
     private double yawToSpeeds(double yaw){

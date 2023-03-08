@@ -34,39 +34,15 @@ public class Shoulder extends SettableSubsystem {
         SmartDashboard.putNumber("ShoulderR Temp", shoulderRight.getMotorTemperature());
 
         if(setpoint == 0) {
-
-                prevPos = (shoulder.getEncoder().getPosition() + shoulderRight.getEncoder().getPosition()) / 2;
-                shoulder.set(-0.045);
-                shoulderRight.set(-0.045);
-//            }
-
-//            else {
-//                shoulder.set(0);
-//                shoulderRight.set(0);
-//            }
+            shoulder.set(0);
         }
 
         else {
             shoulder.set(setpoint / 4);
             shoulderRight.set(setpoint / 4);
         }
-//        if(setpoint == 0) {
-//            if(Math.abs(prevPos - ((shoulder.getEncoder().getPosition() - shoulderRight.getEncoder().getPosition()) / 2)) > 10) {
-//                prevPos = (shoulder.getEncoder().getPosition() - shoulderRight.getEncoder().getPosition()) / 2;
-//                shoulder.set(0.1);
-//                shoulderRight.set(0.1);
-//            }
-//        }
-//
-//        else {
-//            shoulder.set(setpoint);
-//            shoulderRight.set(setpoint);
-//        }
     }
 
-    public void setOffset(double offset){
-        this.offset = offset;
-    }
     public double getAngle(){
         return shoulderRight.getEncoder().getPosition() - offset;
     }

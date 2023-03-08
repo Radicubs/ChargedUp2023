@@ -21,25 +21,13 @@ public class SubsystemChooser extends SubsystemBase {
 
     @Override
     public void periodic() {
-        switch (pov.getAsInt()) {
-            case 270 -> {
-                sub = SubsystemChooserEnum.SHOULDER;
-                SmartDashboard.putString("Selected Subsystem", "Shoulder");
-            }
+        sub = switch(pov.getAsInt()) {
+            case 0 -> SubsystemChooserEnum.ARM;
+            case 90 -> SubsystemChooserEnum.GRIPPER;
+            default -> SubsystemChooserEnum.SHOULDER;
+        };
 
-            case 0 -> {
-                sub = SubsystemChooserEnum.ARM;
-                SmartDashboard.putString("Selected Subsystem", "Arm");
-            }
-
-            case 90 -> {
-                sub = SubsystemChooserEnum.GRIPPER;
-                SmartDashboard.putString("Selected Subsystem", "Gripper");
-            }
-
-            default -> {
-            }
-        }
+        SmartDashboard.putString("Selected Subsystem", sub.toString());
     }
 
 }

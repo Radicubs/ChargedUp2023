@@ -1,7 +1,9 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -10,10 +12,10 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
 import frc.lib.util.auto.AutoDifficulty;
 import frc.lib.util.auto.StartingPosition;
 import frc.robot.commands.common.AprilTagAlign;
+import frc.robot.commands.common.PathWeave;
 import frc.robot.commands.teleop.SubsystemControlCommand;
 import frc.robot.commands.teleop.TeleopSwerve;
 import frc.robot.subsystems.*;
@@ -23,8 +25,8 @@ import java.util.function.DoubleSupplier;
 public class RobotContainer {
 
     // Joysticks
-    private final Joystick driver = new Joystick(0);
-    private final Joystick buttonBoard = new Joystick(1);
+    private final Joystick driver;
+    private final Joystick buttonBoard;
 
     // Buttons
     private final JoystickButton leftAlign;
@@ -34,14 +36,14 @@ public class RobotContainer {
     private final JoystickButton slowmode;
     private final JoystickButton fieldOriented;
     private final JoystickButton resetGyro;
+    private final JoystickButton forward;
+    private final JoystickButton backward;
 
     // Subsystems
     private final Swerve swerve;
     private final PhotonVision camera;
     private final Navx navx;
     private final SubsystemChooser subchooser;
-//    private final PowerDistribution pdp;
-
     private final Shoulder shoulder;
     private final Arm arm;
     private final Gripper gripper;
@@ -52,13 +54,15 @@ public class RobotContainer {
     private final SendableChooser<AutoDifficulty> difficulty;
 
     private AprilTagAlign currentApril;
+    private PathWeave currentPath;
 
     public RobotContainer() {
-//        pdp = new PowerDistribution(0, PowerDistribution.ModuleType.kCTRE);
-//        pdp.clearStickyFaults();
+        driver = new Joystick(0);
+        buttonBoard = new Joystick(1);
         subchooser = new SubsystemChooser(driver::getPOV);
         camera = new PhotonVision();
         navx = new Navx();
+
         swerve = new Swerve(navx::getYaw);
         swerve.setDefaultCommand(
             new TeleopSwerve(
@@ -66,6 +70,7 @@ public class RobotContainer {
                 () -> -driver.getRawAxis(XboxController.Axis.kLeftY.value),
                 () -> -driver.getRawAxis(XboxController.Axis.kLeftX.value),
                 () -> -driver.getRawAxis(XboxController.Axis.kRightX.value)));
+        swerve.resetOdo();
 
         DoubleSupplier left = () -> driver.getRawAxis(XboxController.Axis.kLeftTrigger.value);
         DoubleSupplier right = () -> driver.getRawAxis(XboxController.Axis.kRightTrigger.value);
@@ -101,8 +106,12 @@ public class RobotContainer {
         fieldOriented = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
         resetGyro = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
         gripp = new JoystickButton(buttonBoard, 5);
+        forward = new JoystickButton(buttonBoard, 6);
+        backward = new JoystickButton(buttonBoard, 7);
 
         currentApril = null;
+        currentPath = null;
+
         configureButtonBindings();
     }
 
@@ -113,15 +122,11 @@ public class RobotContainer {
             CommandScheduler.getInstance().schedule(currentApril);
         }));
 
-        leftAlign.onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(currentApril)));
-
         centerAlign.onTrue(new InstantCommand(() -> {
             CommandScheduler.getInstance().cancel(currentApril);
             currentApril = new AprilTagAlign(swerve, camera, 1, AprilTagAlign.TagAlignment.CENTER);
             CommandScheduler.getInstance().schedule(currentApril);
         }));
-
-        centerAlign.onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(currentApril)));
 
         rightAlign.whileTrue(new InstantCommand(() -> {
             CommandScheduler.getInstance().cancel(currentApril);
@@ -129,7 +134,24 @@ public class RobotContainer {
             CommandScheduler.getInstance().schedule(currentApril);
         }));
 
+        leftAlign.onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(currentApril)));
+        centerAlign.onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(currentApril)));
         rightAlign.onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(currentApril)));
+
+        forward.onTrue(new InstantCommand(() -> {
+            CommandScheduler.getInstance().cancel(currentPath);
+            currentPath = PathWeave.fromRelativeCoordinates(swerve, new Pose2d(new Translation2d(1, 0), Rotation2d.fromDegrees(0)));
+            CommandScheduler.getInstance().schedule(currentPath);
+        }, swerve));
+
+        backward.onTrue(new InstantCommand(() -> {
+            CommandScheduler.getInstance().cancel(currentPath);
+            currentPath = PathWeave.fromRelativeCoordinates(swerve, new Pose2d(new Translation2d(-1, 0), Rotation2d.fromDegrees(0)));
+            CommandScheduler.getInstance().schedule(currentPath);
+        }, swerve));
+
+        forward.onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(currentPath), swerve));
+        backward.onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(currentPath), swerve));
 
         gripp.whileTrue(new CommandBase() {
             @Override

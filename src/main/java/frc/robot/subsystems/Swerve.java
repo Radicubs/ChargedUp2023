@@ -17,11 +17,13 @@ public class Swerve extends SubsystemBase {
     private boolean fieldOriented;
     private boolean slowmode;
     private final DoubleSupplier rotationSupplier;
+    private double speed;
 
     public Swerve(DoubleSupplier rotationSupplier) {
         this.rotationSupplier = rotationSupplier;
         fieldOriented = false;
         slowmode = false;
+        speed = Constants.Swerve.maxSpeed;
 
         mSwerveMods = new SwerveModule[] {
                 new SwerveModule(0, Constants.Swerve.Mod0.constants),
@@ -35,7 +37,7 @@ public class Swerve extends SubsystemBase {
 
     public void toggleSlowmode() {
         slowmode = !slowmode;
-        Constants.Swerve.maxSpeed = slowmode ? 15.0 / 4 : 15;
+        speed = slowmode ? Constants.Swerve.maxSpeed / 3 : Constants.Swerve.maxSpeed;
     }
 
     public void toggleFieldOriented() {
@@ -87,26 +89,10 @@ public class Swerve extends SubsystemBase {
         }
     }
 
-    /* Used by SwerveControllerCommand in Auto */
-    public void setModuleAngles(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
-
-        for (SwerveModule mod : mSwerveMods) {
-            mod.setAngle(desiredStates[mod.moduleNumber]);
-        }
-    }
-
     public Pose2d getPose() {
         return swerveOdometry.getPoseMeters();
     }
 
-    public SwerveModuleState[] getModuleStates() {
-        SwerveModuleState[] states = new SwerveModuleState[4];
-        for (SwerveModule mod : mSwerveMods) {
-            states[mod.moduleNumber] = mod.getState();
-        }
-        return states;
-    }
 
     public SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition[] positions = new SwerveModulePosition[4];
@@ -125,8 +111,9 @@ public class Swerve extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putBoolean("Field oriented", fieldOriented);
         SmartDashboard.putBoolean("slowmode", slowmode);
-
-        SmartDashboard.putNumber("swerbe", mSwerveMods[3].getCanCoder().getDegrees());
+        SmartDashboard.putNumber("swerve x", swerveOdometry.getPoseMeters().getX());
+        SmartDashboard.putNumber("swerve y", swerveOdometry.getPoseMeters().getY());
+        SmartDashboard.putNumber("swerve rot", swerveOdometry.getPoseMeters().getRotation().getDegrees());
 
         swerveOdometry.update(getYaw(), getModulePositions());
     }

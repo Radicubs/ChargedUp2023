@@ -21,9 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PathWeave extends CommandBase {
+    private static int instance = 0;
     private static final Pose2d TOLERANCE = new Pose2d(new Translation2d(0.03, 0.03), Rotation2d.fromDegrees(5));
 
     private HolonomicDriveController controller;
+    private int exe = 0;
     private final TrajectoryConfig config;
     private Trajectory trajectory;
     private final Swerve swerve;
@@ -41,6 +43,7 @@ public class PathWeave extends CommandBase {
 
 
     private PathWeave(Swerve swerve, boolean isAbsolute, Pose2d finalPos, Translation2d... points) {
+        instance++;
         config = new TrajectoryConfig(Constants.Swerve.maxSpeed, 1);
         this.finalPos = finalPos;
         this.swerve = swerve;
@@ -52,6 +55,8 @@ public class PathWeave extends CommandBase {
 
     @Override
     public void initialize() {
+        SmartDashboard.putBoolean("wedr4t5r", false);
+        SmartDashboard.putNumber("scheduled", instance);
         Pose2d actualFinalPos;
         List<Translation2d> finalPoints = new ArrayList<>(List.of(points));
         if(!isAbsolute) {
@@ -89,6 +94,7 @@ public class PathWeave extends CommandBase {
         ChassisSpeeds speeds = controller.calculate(swerve.getPose(), state, new Rotation2d());
         speeds.omegaRadiansPerSecond = Units.degreesToRadians(speeds.omegaRadiansPerSecond);
         swerve.driveFromChassisSpeeds(speeds);
+        SmartDashboard.putNumber("exe", exe++);
     }
 
     @Override
@@ -98,7 +104,7 @@ public class PathWeave extends CommandBase {
 
     @Override
     public void end(boolean term) {
-        SmartDashboard.putBoolean("ended", true);
+        SmartDashboard.putBoolean("wedr4t5r", true);
         swerve.driveFromChassisSpeeds(new ChassisSpeeds());
     }
 

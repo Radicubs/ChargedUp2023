@@ -36,7 +36,6 @@ public class MoveToTarget extends CommandBase {
     @Override
     public void initialize() {
         base.driveFromChassisSpeeds(new ChassisSpeeds());
-        SmartDashboard.putString("Apriltag Align Phase", "Moving to target");
     }
 
     private double posXToSpeeds(double posX){

@@ -10,7 +10,6 @@ public class Gripper extends SettableSubsystem {
 
     private final CANSparkMax gripper;
     private double setpoint;
-    private double prevPos;
     private double offset = 0;
 
     public Gripper() {
@@ -19,7 +18,6 @@ public class Gripper extends SettableSubsystem {
         gripper.setIdleMode(CANSparkMax.IdleMode.kBrake);
         gripper.set(0);
         setpoint = 0;
-        prevPos = gripper.getEncoder().getPosition();
     }
 
     public void set(double setpoint) {
@@ -43,15 +41,5 @@ public class Gripper extends SettableSubsystem {
     public void periodic() {
         gripper.set(setpoint / 5);
         SmartDashboard.putNumber("Gripper Temp", gripper.getMotorTemperature());
-        SmartDashboard.putNumber("gripp", setpoint);
-//        SmartDashboard.putNumber("gripper val", setpoint);
-//        if(setpoint == 0) {
-//            if(Math.abs(prevPos - gripper.getEncoder().getPosition()) > 10) {
-//                prevPos = gripper.getEncoder().getPosition();
-//                gripper.set(setpoint);
-//            }
-//        }
-//
-//        else gripper.set(0.1);
     }
 }

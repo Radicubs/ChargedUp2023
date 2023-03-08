@@ -38,7 +38,6 @@ public class AdjustToFinalPosition extends CommandBase {
     @Override
     public void initialize() {
         base.driveFromChassisSpeeds(new ChassisSpeeds());
-        SmartDashboard.putString("Apriltag Align Phase", "Adjusting to offset");
     }
 
     private double posYToSpeeds(double posY){

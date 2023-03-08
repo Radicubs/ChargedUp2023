@@ -35,7 +35,6 @@ public class SpinAroundTarget extends CommandBase {
     @Override
     public void initialize() {
         base.driveFromChassisSpeeds(new ChassisSpeeds());
-        SmartDashboard.putString("Apriltag Align Phase", "Spinning around target");
     }
 
     private double rotZToSpeeds(double rotZ){
