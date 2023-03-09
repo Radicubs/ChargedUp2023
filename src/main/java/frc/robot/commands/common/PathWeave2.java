@@ -34,6 +34,8 @@ public class PathWeave2 extends CommandBase {
     private HolonomicDriveController controller;
 
     public PathWeave2(Swerve swerve, Pose2d endpos, Translation2d... points) {
+        // Pass in the swerve subsystem, the ending position (ex 1, 0, 0 is 1 meter in front of the robot),
+        // and any points to hit along the way
         this.swerve = swerve;
         this.endpos = endpos;
         this.points = new ArrayList<>(List.of(points));
@@ -43,7 +45,10 @@ public class PathWeave2 extends CommandBase {
 
     @Override
     public void initialize() {
+        // Grab angle of the robot
         double angleOffset = swerve.getPose().getRotation().getRadians();
+
+        // Iterate through extra points and rotate them the correct amount, then translate them over to the robot
         for(int i = 0; i < points.size(); i++) {
             Translation2d old = points.remove(i);
             Translation2d t = new Translation2d(
@@ -52,20 +57,27 @@ public class PathWeave2 extends CommandBase {
             points.add(i, t);
         }
 
+        // Do the same to the ending position
         endpos = new Pose2d(new Translation2d(
                 (endpos.getX() * Math.cos(angleOffset)) - (endpos.getY() * Math.sin(angleOffset)) + swerve.getPose().getX(),
                 (endpos.getX() * Math.sin(angleOffset)) + (endpos.getY() * Math.cos(angleOffset)) + swerve.getPose().getY()
         ), Rotation2d.fromRadians(endpos.getRotation().getRadians() + angleOffset));
+
+        // Put the calculated poses onto glass
         swerve.getField().getObject("endpos").setPose(endpos);
         for(int i = 0; i < points.size(); i++) {
             swerve.getField().getObject("pos" + i).setPose(new Pose2d(points.get(i), Rotation2d.fromDegrees(0)));
         }
+
+        // Invoke the trajectory generator
         trajectory = TrajectoryGenerator.generateTrajectory(swerve.getPose(), points, endpos, config);
         controller = new HolonomicDriveController(
                 new PIDController(0.5, 0, 0.001),
                 new PIDController(0.5, 0, 0.001),
                 new ProfiledPIDController(0.6, 0, 0,
                         new TrapezoidProfile.Constraints(6.18, 3.14)));
+
+        // setup timer and add generated trajectory to glass
         timer.reset();
         timer.start();
         swerve.setTrajectory(trajectory);
