@@ -16,6 +16,7 @@ import frc.lib.util.auto.AutoDifficulty;
 import frc.lib.util.auto.StartingPosition;
 import frc.robot.commands.common.AprilTagAlign;
 import frc.robot.commands.common.PathWeave;
+import frc.robot.commands.common.PathWeave2;
 import frc.robot.commands.teleop.SubsystemControlCommand;
 import frc.robot.commands.teleop.TeleopSwerve;
 import frc.robot.subsystems.*;
@@ -54,7 +55,7 @@ public class RobotContainer {
     private final SendableChooser<AutoDifficulty> difficulty;
 
     private AprilTagAlign currentApril;
-    private PathWeave currentPath;
+    private PathWeave2 currentPath;
 
     public RobotContainer() {
         driver = new Joystick(0);
@@ -70,8 +71,8 @@ public class RobotContainer {
                 () -> -driver.getRawAxis(XboxController.Axis.kLeftY.value),
                 () -> -driver.getRawAxis(XboxController.Axis.kLeftX.value),
                 () -> -driver.getRawAxis(XboxController.Axis.kRightX.value)));
-        swerve.resetOdo();
-
+        swerve.resetOdo(new Pose2d(new Translation2d(2, 2), Rotation2d.fromDegrees(0)));
+//swerve.resetOdo();
         DoubleSupplier left = () -> driver.getRawAxis(XboxController.Axis.kLeftTrigger.value);
         DoubleSupplier right = () -> driver.getRawAxis(XboxController.Axis.kRightTrigger.value);
 
@@ -140,13 +141,13 @@ public class RobotContainer {
 
         forward.onTrue(new InstantCommand(() -> {
             CommandScheduler.getInstance().cancel(currentPath);
-            currentPath = PathWeave.fromRelativeCoordinates(swerve, new Pose2d(new Translation2d(1, 0), Rotation2d.fromDegrees(0)));
+            currentPath = new PathWeave2(swerve, new Pose2d(new Translation2d(1, 0), Rotation2d.fromDegrees(0)));
             CommandScheduler.getInstance().schedule(currentPath);
         }, swerve));
 
         backward.onTrue(new InstantCommand(() -> {
             CommandScheduler.getInstance().cancel(currentPath);
-            currentPath = PathWeave.fromRelativeCoordinates(swerve, new Pose2d(new Translation2d(-1, 0), Rotation2d.fromDegrees(0)));
+            currentPath = new PathWeave2(swerve, new Pose2d(new Translation2d(-1, 0), Rotation2d.fromDegrees(0)));
             CommandScheduler.getInstance().schedule(currentPath);
         }, swerve));
 

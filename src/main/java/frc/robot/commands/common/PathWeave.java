@@ -30,7 +30,7 @@ public class PathWeave extends CommandBase {
     private Trajectory trajectory;
     private final Swerve swerve;
     private final Timer timer;
-    private final Pose2d finalPos;
+    private Pose2d finalPos;
     private final boolean isAbsolute;
     private Translation2d[] points;
     public static PathWeave fromFieldCoordinates(Swerve s, Pose2d pose, Translation2d... t) {
@@ -57,33 +57,29 @@ public class PathWeave extends CommandBase {
     public void initialize() {
         SmartDashboard.putBoolean("wedr4t5r", false);
         SmartDashboard.putNumber("scheduled", instance);
-        Pose2d actualFinalPos;
         List<Translation2d> finalPoints = new ArrayList<>(List.of(points));
         if(!isAbsolute) {
             Pose2d pose = swerve.getPose();
-            actualFinalPos = new Pose2d(new Translation2d(finalPos.getX() + pose.getX(), finalPos.getY() + pose.getY()),
-                    Rotation2d.fromDegrees(finalPos.getRotation().getDegrees() + pose.getRotation().getDegrees()));
+            double degrees = pose.getRotation().getDegrees();
+            finalPos = rotatePose(degrees, finalPos);
+            finalPos = new Pose2d(new Translation2d(finalPos.getX() + pose.getX(), finalPos.getY() + pose.getY()),
+                    finalPos.getRotation());
 
             for(int i = 0; i < finalPoints.size(); i++) {
                 Translation2d t = finalPoints.remove(i);
-                t = new Translation2d(t.getX() + pose.getX(), t.getY() + pose.getY());
-                finalPoints.add(t);
+                t = rotateTranslation(degrees, t);
+                finalPoints.add(i, t);
             }
         }
 
-        else {
-            actualFinalPos = finalPos;
-        }
-
-        System.out.println(finalPos);
-        System.out.println(actualFinalPos);
-        trajectory = TrajectoryGenerator.generateTrajectory(swerve.getPose(), finalPoints, actualFinalPos, config);
+        trajectory = TrajectoryGenerator.generateTrajectory(swerve.getPose(), finalPoints, finalPos, config);
+        swerve.setTrajectory(trajectory);
         controller = new HolonomicDriveController(
                 new PIDController(0.5, 0, 0.001),
                 new PIDController(0.5, 0, 0.001),
                 new ProfiledPIDController(0.6, 0, 0,
                         new TrapezoidProfile.Constraints(6.18, 3.14)));
-        controller.setTolerance(TOLERANCE);
+//        controller.setTolerance(TOLERANCE);
         timer.reset();
         timer.start();
     }
@@ -95,6 +91,7 @@ public class PathWeave extends CommandBase {
         speeds.omegaRadiansPerSecond = Units.degreesToRadians(speeds.omegaRadiansPerSecond);
         swerve.driveFromChassisSpeeds(speeds);
         SmartDashboard.putNumber("exe", exe++);
+
     }
 
     @Override
@@ -106,6 +103,17 @@ public class PathWeave extends CommandBase {
     public void end(boolean term) {
         SmartDashboard.putBoolean("wedr4t5r", true);
         swerve.driveFromChassisSpeeds(new ChassisSpeeds());
+    }
+
+    private static Translation2d rotateTranslation(double degrees, Translation2d translation) {
+        return new Translation2d(
+                (Math.cos(degrees) * translation.getX()) - (Math.sin(degrees) * translation.getY()),
+                (Math.sin(degrees) * translation.getX()) + (Math.cos(degrees) * translation.getY()));
+    }
+
+    private static Pose2d rotatePose(double degrees, Pose2d pose) {
+        return new Pose2d(rotateTranslation(degrees, pose.getTranslation()),
+                Rotation2d.fromDegrees(pose.getRotation().getDegrees() + degrees));
     }
 
 }

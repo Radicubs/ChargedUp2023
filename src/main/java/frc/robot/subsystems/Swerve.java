@@ -4,6 +4,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -18,8 +20,12 @@ public class Swerve extends SubsystemBase {
     private boolean slowmode;
     private final DoubleSupplier rotationSupplier;
     private double speed;
+    private final Field2d field;
 
     public Swerve(DoubleSupplier rotationSupplier) {
+        field = new Field2d();
+        SmartDashboard.putData("field", field);
+        SmartDashboard.updateValues();
         this.rotationSupplier = rotationSupplier;
         fieldOriented = false;
         slowmode = false;
@@ -63,7 +69,7 @@ public class Swerve extends SubsystemBase {
                                 translation.getX(),
                                 translation.getY(),
                                 rotation));
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, speed);
 
         for (SwerveModule mod : mSwerveMods) {
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
@@ -93,6 +99,8 @@ public class Swerve extends SubsystemBase {
         return swerveOdometry.getPoseMeters();
     }
 
+    public Field2d getField() {return field;}
+
 
     public SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition[] positions = new SwerveModulePosition[4];
@@ -107,6 +115,10 @@ public class Swerve extends SubsystemBase {
                 : Rotation2d.fromDegrees(rotationSupplier.getAsDouble());
     }
 
+    public void setTrajectory(Trajectory t) {
+        field.getObject("traj").setTrajectory(t);
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putBoolean("Field oriented", fieldOriented);
@@ -114,6 +126,7 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("swerve x", swerveOdometry.getPoseMeters().getX());
         SmartDashboard.putNumber("swerve y", swerveOdometry.getPoseMeters().getY());
         SmartDashboard.putNumber("swerve rot", swerveOdometry.getPoseMeters().getRotation().getDegrees());
+        field.setRobotPose(swerveOdometry.getPoseMeters());
 
         swerveOdometry.update(getYaw(), getModulePositions());
     }
