@@ -11,6 +11,6 @@ public class ImpossibleRisk extends P2AutoCommand {
         super(swerve, isBlue);
         addCommands(
                 new HighRisk(swerve, vision, isBlue),
-                new ChargeStationBalance(swerve, roll));
+                new ChargeStationBalance(swerve, roll, true));
     }
 }

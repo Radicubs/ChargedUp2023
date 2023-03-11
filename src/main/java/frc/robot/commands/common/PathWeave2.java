@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PathWeave2 extends CommandBase {
+    private static final Pose2d tolerance = new Pose2d(0.05, 0.05, Rotation2d.fromDegrees(180));
 
     private static final TrajectoryConfig config =
             new TrajectoryConfig(Constants.AutoConstants.kMaxSpeedMetersPerSecond,
@@ -80,9 +81,9 @@ public class PathWeave2 extends CommandBase {
         controller = new HolonomicDriveController(
                 new PIDController(0.5, 0, 0.001),
                 new PIDController(0.5, 0, 0.001),
-                new ProfiledPIDController(0.6, 0, 0,
-                        new TrapezoidProfile.Constraints(Math.PI / 4, Math.PI / 8)));
-
+                new ProfiledPIDController(0, 0, 0,
+                        new TrapezoidProfile.Constraints(Math.PI / 8, Math.PI / 16)));
+//        controller.setTolerance(tolerance);
         // setup timer and add generated trajectory to glass
         timer.reset();
         timer.start();
@@ -94,6 +95,16 @@ public class PathWeave2 extends CommandBase {
         Trajectory.State state = trajectory.sample(timer.get());
         ChassisSpeeds speeds = controller.calculate(swerve.getPose(), state, new Rotation2d());
         swerve.driveFromChassisSpeeds(speeds);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return controller.atReference() || timer.get() > 5;
+    }
+
+    @Override
+    public void end(boolean terminated) {
+        swerve.driveFromChassisSpeeds(new ChassisSpeeds());
     }
 
 }

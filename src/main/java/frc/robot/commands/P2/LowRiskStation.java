@@ -11,7 +11,7 @@ public class LowRiskStation extends P2AutoCommand { // low risk leaves the commu
         super(swerve, isBlue);
         addCommands(
                 //new NoRisk(swerve, isBlue),
-                new ChargeStationBalance(swerve, roll)
+                new ChargeStationBalance(swerve, roll, true)
         );
     }
 }

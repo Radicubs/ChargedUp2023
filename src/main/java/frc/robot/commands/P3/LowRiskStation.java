@@ -18,7 +18,7 @@ public class LowRiskStation extends P3AutoCommand {
                 PathWeave.fromFieldCoordinates(swerve, new Pose2d(
                         new Translation2d(4.112, 3.321 * yMult), Rotation2d.fromDegrees(0)),
                         new Translation2d(3.788, 4.490 * yMult)),
-                new ChargeStationAlign(swerve, roll)
+                new ChargeStationAlign(swerve, roll, true)
         );
     }
 }
