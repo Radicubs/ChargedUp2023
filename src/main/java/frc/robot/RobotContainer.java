@@ -15,8 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.lib.util.auto.AutoDifficulty;
 import frc.lib.util.auto.StartingPosition;
 import frc.robot.commands.common.AprilTagAlign;
-import frc.robot.commands.common.PathWeave;
-import frc.robot.commands.common.PathWeave2;
+import frc.robot.commands.common.PathWeaveSwervy;
 import frc.robot.commands.teleop.SubsystemControlCommand;
 import frc.robot.commands.teleop.TeleopSwerve;
 import frc.robot.subsystems.*;
@@ -55,7 +54,7 @@ public class RobotContainer {
     private final SendableChooser<AutoDifficulty> difficulty;
 
     private AprilTagAlign currentApril;
-    private PathWeave2 currentPath;
+    private PathWeaveSwervy currentPath;
 
     public RobotContainer() {
         driver = new Joystick(0);
@@ -141,13 +140,13 @@ public class RobotContainer {
 
         forward.onTrue(new InstantCommand(() -> {
             CommandScheduler.getInstance().cancel(currentPath);
-            currentPath = new PathWeave2(swerve, false, new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(45)), new Translation2d(0, 3));
+            currentPath = new PathWeaveSwervy(swerve, false, new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(45)), new Translation2d(0, 3));
             CommandScheduler.getInstance().schedule(currentPath);
         }, swerve));
 
         backward.onTrue(new InstantCommand(() -> {
             CommandScheduler.getInstance().cancel(currentPath);
-            currentPath = new PathWeave2(swerve, false, new Pose2d(new Translation2d(-1, 0), Rotation2d.fromDegrees(0)));
+            currentPath = new PathWeaveSwervy(swerve, false, new Pose2d(new Translation2d(-1, 0), Rotation2d.fromDegrees(0)));
             CommandScheduler.getInstance().schedule(currentPath);
         }, swerve));
 

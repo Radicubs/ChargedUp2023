@@ -7,10 +7,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.lib.util.auto.AutoCommandGenerator;
 import frc.lib.util.auto.AutoDifficulty;
-import frc.robot.commands.common.AprilTagAlignSubCommands.AdjustToFinalPosition;
 import frc.robot.commands.common.PathWeave;
-import frc.robot.commands.common.PathWeave2;
-import frc.robot.commands.common.PathWeave3;
+import frc.robot.commands.common.PathWeaveStraight;
 import frc.robot.commands.common.chargestation.ChargeStationBalance;
 import frc.robot.commands.common.gripperup.GripperUp;
 import frc.robot.subsystems.Arm;
@@ -35,7 +33,7 @@ public class TestCommandGenerator implements AutoCommandGenerator {
 
             case HighRisk:
                 return new SequentialCommandGroup(
-                        new PathWeave3(swerve, true, 5.5,
+                        new PathWeaveStraight(swerve, true, 5.5,
                                 new Pose2d(new Translation2d(1.5, 0), Rotation2d.fromRadians(0)),
                                 new Pose2d(new Translation2d(1.5, 1.397), Rotation2d.fromDegrees(0))),
                         new ChargeStationBalance(swerve, roll, false)
