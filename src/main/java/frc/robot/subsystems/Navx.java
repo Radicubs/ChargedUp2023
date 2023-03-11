@@ -28,4 +28,9 @@ public class Navx extends SubsystemBase {
         gyro.reset();
     }
 
+    @Override
+    public void periodic(){
+        SmartDashboard.putNumber("roll", this.getPitch());
+    }
+
 }

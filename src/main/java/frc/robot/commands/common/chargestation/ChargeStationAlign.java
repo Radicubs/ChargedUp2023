@@ -3,7 +3,6 @@ package frc.robot.commands.common.chargestation;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Swerve;
 
@@ -22,11 +21,6 @@ public class ChargeStationAlign extends CommandBase {
         this.swerve = swerve;
         this.roll = roll;
         addRequirements(swerve);
-    }
-
-    @Override
-    public void initialize() {
-        SmartDashboard.putString("cs", "align");
     }
 
     @Override
