@@ -24,7 +24,8 @@ public class ChargeStationAlign extends CommandBase {
 
     @Override
     public void execute() {
-        double speed = (forward) ? roll.getAsDouble() : -roll.getAsDouble();
+        double speed = roll.getAsDouble();
+        if(!forward) speed *= -1;
         speed = Math.copySign(((Math.pow(speed, 2) / 500.0) + 0.25), speed);
         swerve.driveFromChassisSpeeds(new ChassisSpeeds(speed, 0, 0));
     }
