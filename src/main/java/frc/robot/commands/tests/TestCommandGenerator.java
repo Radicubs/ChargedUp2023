@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.lib.util.auto.AutoCommandGenerator;
 import frc.lib.util.auto.AutoDifficulty;
 import frc.robot.commands.common.PathWeave;
+import frc.robot.commands.common.PathWeave2;
 import frc.robot.commands.common.chargestation.ChargeStationBalance;
 import frc.robot.commands.common.gripperup.GripperUp;
 import frc.robot.subsystems.Arm;
@@ -32,6 +33,11 @@ public class TestCommandGenerator implements AutoCommandGenerator {
 
             case MidRisk:
                 return new GripperUp(swerve, arm, shoulder);
+
+            case HighRisk:
+                return new SequentialCommandGroup(
+                        new PathWeave2(swerve, true, new Pose2d(new Translation2d(1.5, 1.397), Rotation2d.fromDegrees(0)), new Translation2d(1.5, 0))
+                );
 
             case Impossible:
                 return new SequentialCommandGroup(PathWeave.fromRelativeCoordinates(swerve,

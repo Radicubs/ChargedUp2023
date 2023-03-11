@@ -13,6 +13,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Swerve;
@@ -28,15 +29,17 @@ public class PathWeave2 extends CommandBase {
 
     private final Swerve swerve;
     private final Timer timer;
+    private final boolean isRobotRelative;
     private Pose2d endpos;
     private List<Translation2d> points;
     private Trajectory trajectory;
     private HolonomicDriveController controller;
 
-    public PathWeave2(Swerve swerve, Pose2d endpos, Translation2d... points) {
+    public PathWeave2(Swerve swerve, boolean isRobotRelative, Pose2d endpos, Translation2d... points) {
         // Pass in the swerve subsystem, the ending position (ex 1, 0, 0 is 1 meter in front of the robot),
         // and any points to hit along the way
         this.swerve = swerve;
+        this.isRobotRelative = isRobotRelative;
         this.endpos = endpos;
         this.points = new ArrayList<>(List.of(points));
         timer = new Timer();
@@ -45,23 +48,26 @@ public class PathWeave2 extends CommandBase {
 
     @Override
     public void initialize() {
-        // Grab angle of the robot
-        double angleOffset = swerve.getPose().getRotation().getRadians();
+        if(isRobotRelative) {
+            // Grab angle of the robot
+            double angleOffset = swerve.getPose().getRotation().getRadians();
 
-        // Iterate through extra points and rotate them the correct amount, then translate them over to the robot
-        for(int i = 0; i < points.size(); i++) {
-            Translation2d old = points.remove(i);
-            Translation2d t = new Translation2d(
-                    (old.getX() * Math.cos(angleOffset)) - (old.getY() * Math.sin(angleOffset)) + swerve.getPose().getX(),
-                    (old.getX() * Math.sin(angleOffset)) + (old.getY() * Math.cos(angleOffset)) + swerve.getPose().getY());
-            points.add(i, t);
+            // Iterate through extra points and rotate them the correct amount, then translate them over to the robot
+            for(int i = 0; i < points.size(); i++) {
+                Translation2d old = points.remove(i);
+                Translation2d t = new Translation2d(
+                        (old.getX() * Math.cos(angleOffset)) - (old.getY() * Math.sin(angleOffset)) + swerve.getPose().getX(),
+                        (old.getX() * Math.sin(angleOffset)) + (old.getY() * Math.cos(angleOffset)) + swerve.getPose().getY());
+                points.add(i, t);
+            }
+
+            // Do the same to the ending position
+            endpos = new Pose2d(new Translation2d(
+                    (endpos.getX() * Math.cos(angleOffset)) - (endpos.getY() * Math.sin(angleOffset)) + swerve.getPose().getX(),
+                    (endpos.getX() * Math.sin(angleOffset)) + (endpos.getY() * Math.cos(angleOffset)) + swerve.getPose().getY()
+            ), Rotation2d.fromRadians(endpos.getRotation().getRadians() + angleOffset));
+
         }
-
-        // Do the same to the ending position
-        endpos = new Pose2d(new Translation2d(
-                (endpos.getX() * Math.cos(angleOffset)) - (endpos.getY() * Math.sin(angleOffset)) + swerve.getPose().getX(),
-                (endpos.getX() * Math.sin(angleOffset)) + (endpos.getY() * Math.cos(angleOffset)) + swerve.getPose().getY()
-        ), Rotation2d.fromRadians(endpos.getRotation().getRadians() + angleOffset));
 
         // Put the calculated poses onto glass
         swerve.getField().getObject("endpos").setPose(endpos);
@@ -75,7 +81,7 @@ public class PathWeave2 extends CommandBase {
                 new PIDController(0.5, 0, 0.001),
                 new PIDController(0.5, 0, 0.001),
                 new ProfiledPIDController(0.6, 0, 0,
-                        new TrapezoidProfile.Constraints(6.18, 3.14)));
+                        new TrapezoidProfile.Constraints(Math.PI / 4, Math.PI / 8)));
 
         // setup timer and add generated trajectory to glass
         timer.reset();
@@ -85,10 +91,9 @@ public class PathWeave2 extends CommandBase {
 
     @Override
     public void execute() {
-//        Trajectory.State state = trajectory.sample(timer.get());
-//        ChassisSpeeds speeds = controller.calculate(swerve.getPose(), state, new Rotation2d());
-//        speeds.omegaRadiansPerSecond = Units.degreesToRadians(speeds.omegaRadiansPerSecond);
-//        swerve.driveFromChassisSpeeds(speeds);
+        Trajectory.State state = trajectory.sample(timer.get());
+        ChassisSpeeds speeds = controller.calculate(swerve.getPose(), state, new Rotation2d());
+        swerve.driveFromChassisSpeeds(speeds);
     }
 
 }
