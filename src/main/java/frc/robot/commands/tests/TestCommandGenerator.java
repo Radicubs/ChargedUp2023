@@ -26,7 +26,7 @@ public class TestCommandGenerator implements AutoCommandGenerator {
                 return PathWeave.fromRelativeCoordinates(swerve, new Pose2d(new Translation2d(3, 0), Rotation2d.fromDegrees(0)));
 
             case LowRiskStation:
-                return new ChargeStationBalance(swerve, roll);
+                return new ChargeStationBalance(swerve, roll, true);
 
             case LowRiskPlace:
                 return PathWeave.fromRelativeCoordinates(swerve, new Pose2d(new Translation2d(0.5,  0), Rotation2d.fromDegrees(0)));
@@ -36,13 +36,14 @@ public class TestCommandGenerator implements AutoCommandGenerator {
 
             case HighRisk:
                 return new SequentialCommandGroup(
-                        new PathWeave2(swerve, true, new Pose2d(new Translation2d(1.5, 1.397), Rotation2d.fromDegrees(0)), new Translation2d(1.5, 0))
+                        new PathWeave2(swerve, true, new Pose2d(new Translation2d(1.5, 1.397), Rotation2d.fromDegrees(0)), new Translation2d(1.5, 0)),
+                        new ChargeStationBalance(swerve, roll, false)
                 );
 
             case Impossible:
                 return new SequentialCommandGroup(PathWeave.fromRelativeCoordinates(swerve,
                         new Pose2d(new Translation2d(-5, 0), Rotation2d.fromDegrees(0))),
-                        new ChargeStationBalance(swerve, roll));
+                        new ChargeStationBalance(swerve, roll, false));
 
             default:
                 return null;

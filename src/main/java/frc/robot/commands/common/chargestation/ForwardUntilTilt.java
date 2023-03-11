@@ -10,16 +10,18 @@ public class ForwardUntilTilt extends CommandBase {
 
     private final Swerve swerve;
     private final DoubleSupplier roll;
+    private final boolean forward;
 
-    public ForwardUntilTilt(Swerve swerve, DoubleSupplier roll) {
+    public ForwardUntilTilt(Swerve swerve, DoubleSupplier roll, boolean forward) {
         this.swerve = swerve;
         this.roll = roll;
+        this.forward = forward;
         addRequirements(swerve);
     }
 
     @Override
     public void initialize() {
-        swerve.driveFromChassisSpeeds(new ChassisSpeeds(0.5, 0, 0));
+        swerve.driveFromChassisSpeeds(new ChassisSpeeds((forward) ? 0.5 : -0.5, 0, 0));
     }
 
     @Override

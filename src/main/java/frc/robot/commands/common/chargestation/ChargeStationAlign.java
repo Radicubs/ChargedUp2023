@@ -14,27 +14,19 @@ public class ChargeStationAlign extends CommandBase {
 
     private final Swerve swerve;
     private final DoubleSupplier roll;
-    private double prev;
-    private double change;
+    private boolean forward;
 
-    public ChargeStationAlign(Swerve swerve, DoubleSupplier roll) {
+    public ChargeStationAlign(Swerve swerve, DoubleSupplier roll, boolean forward) {
         this.swerve = swerve;
         this.roll = roll;
-        prev = roll.getAsDouble();
         addRequirements(swerve);
     }
 
     @Override
     public void execute() {
-        change = Math.abs(roll.getAsDouble() - prev);
-        if(change < 5){
-            double speed = roll.getAsDouble();
-            //speed = Math.copySign(((Math.pow(speed, 2) / 500.0) + 0.25), speed);
-            swerve.driveFromChassisSpeeds(new ChassisSpeeds(Math.copySign(0.15, speed), 0, 0));
-        }
-        System.out.println(change);
-        
-        prev = roll.getAsDouble();
+        double speed = (forward) ? roll.getAsDouble() : -roll.getAsDouble();
+        speed = Math.copySign(((Math.pow(speed, 2) / 500.0) + 0.25), speed);
+        swerve.driveFromChassisSpeeds(new ChassisSpeeds(speed, 0, 0));
     }
 
     @Override
