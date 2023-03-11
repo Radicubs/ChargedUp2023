@@ -1,6 +1,7 @@
 package frc.robot.commands.common.chargestation;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Swerve;
 
@@ -21,6 +22,7 @@ public class ForwardUntilTilt extends CommandBase {
 
     @Override
     public void initialize() {
+        SmartDashboard.putString("cs", "forwards");
         swerve.driveFromChassisSpeeds(new ChassisSpeeds((forward) ? 0.5 : -0.5, 0, 0));
     }
 
