@@ -11,6 +11,7 @@ import frc.robot.commands.common.PathWeave;
 import frc.robot.commands.common.PathWeaveStraight;
 import frc.robot.commands.common.chargestation.ChargeStationBalance;
 import frc.robot.commands.common.gripperup.GripperUp;
+import frc.robot.commands.common.placemid.PlaceMid;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.Shoulder;
@@ -23,7 +24,7 @@ public class TestCommandGenerator implements AutoCommandGenerator {
     public Command generate(Swerve swerve, Arm arm, Shoulder shoulder, PhotonVision vision, DoubleSupplier roll, boolean alliance, AutoDifficulty difficulty) {
         switch(difficulty) {
             case NoRisk:
-                return PathWeave.fromRelativeCoordinates(swerve, new Pose2d(new Translation2d(3, 0), Rotation2d.fromDegrees(0)));
+                return new PlaceMid(shoulder, arm);
 
             case LowRiskStation:
                 return new ChargeStationBalance(swerve, roll, true);

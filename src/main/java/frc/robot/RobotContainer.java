@@ -38,6 +38,7 @@ public class RobotContainer {
     private final JoystickButton resetGyro;
     private final JoystickButton forward;
     private final JoystickButton backward;
+    private final JoystickButton resetEncs;
 
     // Subsystems
     private final Swerve swerve;
@@ -108,6 +109,7 @@ public class RobotContainer {
         gripp = new JoystickButton(buttonBoard, 5);
         forward = new JoystickButton(buttonBoard, 6);
         backward = new JoystickButton(buttonBoard, 7);
+        resetEncs = new JoystickButton(driver, XboxController.Button.kA.value);
 
         currentApril = null;
         currentPath = null;
@@ -116,6 +118,10 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
+        resetEncs.onTrue(new InstantCommand(() -> {
+            shoulder.resetEnc();
+            arm.resetEnc();
+        }));
         leftAlign.onTrue(new InstantCommand(() -> {
             CommandScheduler.getInstance().cancel(currentApril);
             currentApril = new AprilTagAlign(swerve, camera, camera.findNearestTag(), AprilTagAlign.TagAlignment.LEFT);

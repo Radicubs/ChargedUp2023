@@ -10,8 +10,7 @@ public class Shoulder extends SettableSubsystem {
     private final CANSparkMax shoulder;
     private final CANSparkMax shoulderRight;
     private double setpoint;
-    private double prevPos;
-    private double offset = 0;
+    private double offset;
 
     public Shoulder() {
         shoulder = new CANSparkMax(14, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -25,7 +24,7 @@ public class Shoulder extends SettableSubsystem {
         shoulderRight.set(0);
         shoulderRight.setInverted(true);
         setpoint = 0;
-        prevPos = shoulder.getEncoder().getPosition();
+        resetEnc();
     }
 
     @Override
@@ -33,22 +32,22 @@ public class Shoulder extends SettableSubsystem {
         SmartDashboard.putNumber("ShoulderL Temp", shoulder.getMotorTemperature());
         SmartDashboard.putNumber("ShoulderR Temp", shoulderRight.getMotorTemperature());
 
-        if(setpoint == 0) {
-            shoulder.set(0);
-        }
+        SmartDashboard.putNumber("shoudlerval", getPosition());
 
-        else {
-            shoulder.set(setpoint / 4);
-            shoulderRight.set(setpoint / 4);
-        }
-    }
-
-    public double getAngle(){
-        return shoulderRight.getEncoder().getPosition() - offset;
+        shoulder.set(setpoint / 4);
+        shoulderRight.set(setpoint / 4);
     }
 
     public void set(double setpoint) {
         this.setpoint = setpoint;
+    }
+
+    public void resetEnc() {
+        offset = (shoulder.getEncoder().getPosition() + shoulderRight.getEncoder().getPosition()) / 2.0;
+    }
+
+    public double getPosition() {
+        return ((shoulder.getEncoder().getPosition() + shoulderRight.getEncoder().getPosition()) / 2) - offset;
     }
 
     public SubsystemChooserEnum getType() {

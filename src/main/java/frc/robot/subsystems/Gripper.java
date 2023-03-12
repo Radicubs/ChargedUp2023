@@ -10,7 +10,7 @@ public class Gripper extends SettableSubsystem {
 
     private final CANSparkMax gripper;
     private double setpoint;
-    private double offset = 0;
+    private double offset;
 
     public Gripper() {
         gripper = new CANSparkMax(16, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -18,6 +18,7 @@ public class Gripper extends SettableSubsystem {
         gripper.setIdleMode(CANSparkMax.IdleMode.kBrake);
         gripper.set(0);
         setpoint = 0;
+        resetEnc();
     }
 
     public void set(double setpoint) {
@@ -28,8 +29,8 @@ public class Gripper extends SettableSubsystem {
         return gripper.getEncoder().getPosition() - offset;
     }
 
-    public void setOffset(double offset){
-        this.offset = offset;
+    public void resetEnc() {
+        offset = gripper.getEncoder().getPosition();
     }
 
     @Override

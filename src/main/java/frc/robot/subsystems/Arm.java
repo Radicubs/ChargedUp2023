@@ -10,27 +10,25 @@ import frc.lib.util.subchooser.SubsystemChooserEnum;
 public class Arm extends SettableSubsystem {
 
     private final WPI_TalonFX arm;
-    private boolean clamped;
     private double offset = 0;
-    private double prevPos;
     private double setpoint;
 
     public Arm() {
         arm = new WPI_TalonFX(13);
         arm.configFactoryDefault();
         arm.setNeutralMode(NeutralMode.Brake);
-        prevPos = arm.getSelectedSensorPosition();
+        resetEnc();
     }
 
     public void set(double setpoint) {
         this.setpoint = setpoint;
     }
 
-    public void setOffset(double offset){
-        this.offset = offset;
+    public void resetEnc() {
+        offset = arm.getSelectedSensorPosition();
     }
 
-    public double getLength(){
+    public double getPosition() {
         return arm.getSelectedSensorPosition() - offset;
     }
 
@@ -43,6 +41,7 @@ public class Arm extends SettableSubsystem {
     public void periodic() {
         arm.set(ControlMode.PercentOutput, setpoint);
         SmartDashboard.putNumber("Arm Temp", arm.getTemperature());
+        SmartDashboard.putNumber("armval", getPosition());
     }
 
 }
