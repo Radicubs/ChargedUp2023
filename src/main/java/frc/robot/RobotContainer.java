@@ -13,9 +13,14 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.lib.util.auto.AutoDifficulty;
-import frc.lib.util.auto.StartingPosition;
+import frc.lib.util.auto.ChargeStationPosition;
 import frc.robot.commands.common.AprilTagAlign;
+import frc.robot.commands.common.PathWeaveStraight;
 import frc.robot.commands.common.PathWeaveSwervy;
+import frc.robot.commands.common.chargestation.ChargeStation;
+import frc.robot.commands.common.chargestation.ChargeStationAlign;
+import frc.robot.commands.common.chargestation.ChargeStationBalance;
+import frc.robot.commands.common.placemid.PlaceMid;
 import frc.robot.commands.teleop.SubsystemControlCommand;
 import frc.robot.commands.teleop.TeleopSwerve;
 import frc.robot.subsystems.*;
@@ -50,8 +55,6 @@ public class RobotContainer {
     private final Gripper gripper;
 
     // Sendables
-    private final SendableChooser<Boolean> allianceColor;
-    private final SendableChooser<StartingPosition> startingPos;
     private final SendableChooser<AutoDifficulty> difficulty;
 
     private AprilTagAlign currentApril;
@@ -85,17 +88,10 @@ public class RobotContainer {
         gripper = new Gripper();
         gripper.setDefaultCommand(new SubsystemControlCommand(gripper, left, right, subchooser::getSub));
 
-        allianceColor = new SendableChooser<>();
-        allianceColor.setDefaultOption("Blue", true);
-        allianceColor.addOption("Red", false);
-        SmartDashboard.putData("Alliance Color", allianceColor);
-
-        startingPos = new SendableChooser<>();
-        for(StartingPosition pos : StartingPosition.values()) startingPos.addOption(pos.toString(), pos);
-        SmartDashboard.putData("Starting Position", startingPos);
 
         difficulty = new SendableChooser<>();
         for(AutoDifficulty diff : AutoDifficulty.values()) difficulty.addOption(diff.toString(), diff);
+        
         SmartDashboard.putData("Auto Difficulty", difficulty);
 
         SmartDashboard.updateValues();
@@ -170,10 +166,17 @@ public class RobotContainer {
         fieldOriented.onTrue(new InstantCommand(swerve::toggleFieldOriented, swerve));
         resetGyro.onTrue(new InstantCommand(navx::reset, navx));
     }
-
     public Command getAutonomousCommand() {
-        if(startingPos.getSelected() == null) return null;
-        return startingPos.getSelected().generate(swerve, arm, shoulder, camera, navx::getPitch, allianceColor.getSelected(), difficulty.getSelected());
+        //return startingPos.getSelected().generate(swerve, arm, shoulder, camera, navx::getPitch, allianceColor.getSelected(), difficulty.getSelected());
+        return switch(difficulty.getSelected()){
+            case ChargeStationForward -> new ChargeStation(swerve, navx::getPitch, ChargeStationPosition.CENTER);
+            case ChargeStationLeft -> new ChargeStation(swerve, navx::getPitch, ChargeStationPosition.LEFT);
+            case ChargeStationRight -> new ChargeStation(swerve, navx::getPitch, ChargeStationPosition.RIGHT);
+            case PlaceMid -> new PlaceMid(shoulder, arm);
+            case PlaceHigh -> null;
+            case Forward -> new PathWeaveStraight(swerve, true, 3, new Pose2d(new Translation2d(1.5, 0), Rotation2d.fromDegrees(0)));
+            case Nothing -> null;
+        };
     }
 
 }
